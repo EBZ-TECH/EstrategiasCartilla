@@ -1,0 +1,537 @@
+{
+  "id": "leve",
+  "title": "Deterioro cognitivo leve",
+  "shortTitle": "Leve",
+  "order": 2,
+  "color": "#2F6FAE",
+  "description": "Las personas mayores con posibles dificultades cognitivas leves pueden presentar cambios en la memoria, la atención, la orientación o la planificación, que se manifiestan en situaciones como olvidar información reciente, necesitar recordatorios o tener dificultades para organizar algunas tareas. A pesar de ello, pueden conservar una importante capacidad para desenvolverse de manera independiente en sus ocupaciones cotidianas, aunque determinadas actividades requieran más tiempo, organización o apoyos puntuales.",
+  "whyCaregiverTitle": "¿Por qué las estrategias están dirigidas al cuidador?",
+  "whyCaregiver": "Las estrategias se dirigen al cuidador para proporcionarle orientaciones que faciliten el acompañamiento sin limitar innecesariamente la independencia de la persona mayor. Mediante rutinas estables, recordatorios, indicaciones claras y adaptaciones sencillas del entorno, el cuidador puede favorecer la participación cotidiana y el aprovechamiento de las capacidades conservadas, ofreciendo ayuda únicamente cuando las necesidades de la persona lo requieran.",
+  "occupations": [
+    {
+      "id": "avd",
+      "title": "Actividades de la vida diaria",
+      "shortTitle": "Vida diaria",
+      "icon": "home",
+      "order": 1,
+      "activities": [
+        {
+          "id": "banarse-y-ducha",
+          "title": "Bañarse y ducha",
+          "strategies": [
+            "Mantener una rutina conocida: procurar que el baño se realice en horarios similares y siguiendo una secuencia habitual.",
+            "Facilitar la organización: dejar preparados y a la vista el jabón, el champú, la toalla y los demás elementos necesarios.",
+            "Recordar los pasos cuando sea necesario: utilizar indicaciones breves, como «lava tu cuerpo» o «ahora enjuágate», evitando dar muchas instrucciones al mismo tiempo.",
+            "Favorecer la autonomía: permitir que la persona se bañe y se seque por sí misma cuando pueda hacerlo de forma segura, ofreciendo ayuda solo en los pasos que le resulten difíciles.",
+            "Mantener un entorno seguro: utilizar superficies antideslizantes cuando sea posible, mantener el piso seco y comprobar que los elementos estén al alcance."
+          ]
+        },
+        {
+          "id": "higiene-del-bano-y-del-aseo",
+          "title": "Higiene del baño y del aseo",
+          "strategies": [
+            "Mantener una distribución estable: procurar que los elementos de aseo permanezcan en los mismos lugares para facilitar su localización.",
+            "Facilitar la organización del espacio: conservar las superficies despejadas y retirar objetos innecesarios que puedan generar confusión o dificultar el uso del baño.",
+            "Recordar el orden de las tareas: ofrecer indicaciones sencillas para que la persona pueda organizar los elementos utilizados y dejar el espacio en condiciones adecuadas.",
+            "Favorecer su participación: permitir que recoja sus pertenencias y organice los elementos que utiliza habitualmente, siempre que pueda hacerlo con seguridad.",
+            "Supervisar sin sustituir: comprobar que el espacio quede seguro y limpio, interviniendo únicamente en las tareas que la persona no logre completar por sí misma."
+          ]
+        },
+        {
+          "id": "vestirse",
+          "title": "Vestirse",
+          "strategies": [
+            "Mantener una rutina diaria: procurar que el vestido se realice en un momento habitual del día y siguiendo un orden conocido.",
+            "Organizar la ropa: dejar disponibles las prendas necesarias y guardarlas en lugares fijos, fáciles de reconocer y alcanzar.",
+            "Facilitar la elección: ofrecer dos opciones de ropa adecuadas al clima y a la actividad que realizará, respetando sus preferencias.",
+            "Dar indicaciones paso a paso: si olvida la secuencia, orientar con frases breves, como «primero ponte la camisa» y «después el pantalón».",
+            "Dar tiempo y apoyar solo cuando sea necesario: permitir que complete cada paso a su ritmo y ayudar únicamente en las acciones que le resulten difíciles, sin vestirla por completo si todavía puede hacerlo de manera independiente."
+          ]
+        },
+        {
+          "id": "comer-y-tragar",
+          "title": "Comer y tragar",
+          "strategies": [
+            "Mantener horarios regulares: procurar que las comidas se realicen en momentos similares y en un lugar conocido.",
+            "Preparar un entorno organizado: disponer los utensilios necesarios y reducir las distracciones que puedan dificultar la atención durante la comida.",
+            "Favorecer un ritmo tranquilo: permitir que la persona coma sin apresurarse y recordarle, si es necesario, que continúe con calma.",
+            "Mantener la independencia con seguridad: permitir que utilice sus propios utensilios y maneje los alimentos por sí misma mientras pueda hacerlo de manera segura.",
+            "Observar posibles dificultades: prestar atención a tos al comer o beber, atragantamientos, voz húmeda después de tragar o dificultad para manejar los alimentos. Si aparecen estos signos, solicitar valoración profesional; no modificar por cuenta propia la consistencia de los alimentos ni de los líquidos."
+          ]
+        },
+        {
+          "id": "alimentacion",
+          "title": "Alimentación",
+          "strategies": [
+            "Mantener hábitos regulares: conservar horarios conocidos para las comidas y ofrecer líquidos durante el día, de acuerdo con sus necesidades e indicaciones de salud.",
+            "Facilitar la elección de alimentos: presentar opciones sencillas y permitir que la persona decida entre ellas según sus preferencias y necesidades nutricionales.",
+            "Apoyar la organización: ayudar a planificar las comidas y dejar disponibles los alimentos necesarios para facilitar la continuidad de sus hábitos.",
+            "Favorecer su participación: permitir que colabore en decisiones sobre su alimentación y en tareas sencillas relacionadas con ella, siempre que sean seguras.",
+            "Observar cambios en los hábitos alimentarios: prestar atención a olvidos frecuentes de las comidas, disminución del apetito o menor consumo de líquidos, y comunicar los cambios persistentes a los profesionales de salud."
+          ]
+        },
+        {
+          "id": "movilidad-funcional",
+          "title": "Movilidad funcional",
+          "strategies": [
+            "Mantener los desplazamientos cotidianos: favorecer que continúe caminando y desplazándose por el hogar de forma independiente cuando pueda hacerlo con seguridad.",
+            "Conservar rutas conocidas: evitar cambios innecesarios en la ubicación de muebles y objetos que utiliza habitualmente.",
+            "Facilitar la orientación: mantener los espacios despejados y bien iluminados, especialmente los recorridos hacia el baño y el dormitorio.",
+            "Dar tiempo para los cambios de posición: permitir que se levante, se siente y cambie de posición sin apresurarla, ofreciendo una indicación sencilla si la necesita.",
+            "Acompañar según el riesgo: permanecer cerca durante desplazamientos que puedan representar dificultad y brindar apoyo cuando sea necesario, sin limitar innecesariamente su independencia."
+          ]
+        },
+        {
+          "id": "higiene-personal-y-aseo",
+          "title": "Higiene personal y aseo",
+          "strategies": [
+            "Mantener una rutina diaria: conservar horarios habituales para el cepillado dental, lavado de manos, peinado y demás cuidados personales.",
+            "Dejar los elementos preparados: mantener el cepillo dental, la crema dental, el peine y los productos de higiene en lugares conocidos y accesibles.",
+            "Utilizar recordatorios sencillos: si olvida algún paso, ofrecer una indicación breve, como «ahora cepíllate los dientes» o «recuerda lavarte las manos».",
+            "Favorecer la autonomía: permitir que realice por sí misma cada acción que pueda completar, evitando intervenir antes de que lo intente.",
+            "Comprobar la finalización: verificar discretamente que haya completado los cuidados necesarios y ofrecer ayuda puntual cuando algún paso se le dificulte."
+          ]
+        },
+        {
+          "id": "actividad-sexual",
+          "title": "Actividad sexual",
+          "strategies": [
+            "Respetar sus preferencias y decisiones: reconocer que la persona mayor conserva el derecho a expresar sus intereses, deseos y necesidades relacionados con la intimidad.",
+            "Favorecer la privacidad: procurar que disponga de espacios privados, sin interrupciones innecesarias.",
+            "Facilitar la comunicación: permitir que exprese sus inquietudes y preferencias sin juicios ni presiones.",
+            "Respetar el consentimiento: cualquier interacción íntima debe ser voluntaria y contar con el consentimiento de las personas involucradas, quienes deben poder comprender y comunicar sus decisiones.",
+            "Facilitar orientación profesional cuando sea necesaria: si surgen dudas sobre salud sexual, cambios físicos, medicamentos o dificultades en la relación, favorecer la consulta con un profesional de salud, respetando siempre la confidencialidad."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aivd",
+      "title": "Actividades instrumentales de la vida diaria",
+      "shortTitle": "Instrumentales",
+      "icon": "list",
+      "order": 2,
+      "activities": [
+        {
+          "id": "cuidado-de-otros",
+          "title": "Cuidado de otros",
+          "strategies": [
+            "Mantener su participación: permitir que la persona mayor continúe colaborando en el cuidado de familiares cuando sea una responsabilidad habitual y pueda realizarla de manera segura.",
+            "Organizar las responsabilidades: establecer horarios y rutinas conocidas para las tareas de cuidado.",
+            "Facilitar el recuerdo: utilizar recordatorios sencillos para las tareas que requieran seguimiento, como acompañar a un familiar o preparar elementos necesarios.",
+            "Respetar sus capacidades: permitir que realice las acciones que puede completar de manera independiente, sin asignarle responsabilidades que superen sus posibilidades.",
+            "Supervisar cuando sea necesario: acompañar las tareas que impliquen riesgos o requieran una respuesta rápida, especialmente cuando la seguridad de otra persona dependa de ellas."
+          ]
+        },
+        {
+          "id": "cuidado-de-mascotas-y-animales",
+          "title": "Cuidado de mascotas y animales",
+          "strategies": [
+            "Mantener rutinas de cuidado: procurar que la alimentación y otras atenciones habituales de la mascota se realicen en horarios conocidos.",
+            "Organizar los elementos: mantener el alimento, los recipientes y los productos de cuidado en lugares fijos y fáciles de identificar.",
+            "Facilitar el recuerdo: utilizar una lista visible o recordatorios sencillos para las tareas que deban realizarse diariamente.",
+            "Favorecer la participación: permitir que la persona mayor alimente, cepille o acompañe a su mascota cuando pueda hacerlo de manera segura.",
+            "Comprobar las tareas esenciales: verificar que el animal reciba alimento, agua y los cuidados necesarios, ofreciendo apoyo cuando existan olvidos o dificultades."
+          ]
+        },
+        {
+          "id": "crianza-de-los-ninos",
+          "title": "Crianza de los niños",
+          "strategies": [
+            "Mantener una participación segura: favorecer que la persona mayor continúe compartiendo con los niños y colaborando en tareas apropiadas a sus capacidades.",
+            "Conservar rutinas conocidas: mantener horarios y procedimientos habituales para las responsabilidades que pueda asumir.",
+            "Facilitar las instrucciones: explicar las tareas de forma clara y breve cuando requieran recordar varios pasos.",
+            "Evitar responsabilidades de riesgo: no dejar a su cargo, sin apoyo adecuado, situaciones que exijan supervisión continua o una respuesta inmediata ante una emergencia si presenta dificultades para asumirlas.",
+            "Favorecer el apoyo familiar: acordar con otros familiares cómo distribuir las responsabilidades para preservar la participación de la persona mayor y garantizar la seguridad de los niños."
+          ]
+        },
+        {
+          "id": "gestion-de-la-comunicacion",
+          "title": "Gestión de la comunicación",
+          "strategies": [
+            "Mantener el uso de medios conocidos: favorecer que continúe utilizando el teléfono, celular u otros dispositivos que maneje habitualmente.",
+            "Organizar los contactos importantes: mantener disponibles los números de familiares, amigos y servicios de emergencia, utilizando nombres o fotografías cuando faciliten su identificación.",
+            "Facilitar el recuerdo de comunicaciones: emplear una agenda o recordatorios para llamadas, citas y compromisos importantes.",
+            "Favorecer la iniciativa: permitir que realice llamadas, envíe mensajes y responda comunicaciones por sí misma cuando pueda hacerlo.",
+            "Ofrecer ayuda puntual: explicar los pasos de una función del dispositivo cuando lo necesite y estar atento a posibles engaños o mensajes sospechosos, sin revisar sus comunicaciones innecesariamente ni vulnerar su privacidad."
+          ]
+        },
+        {
+          "id": "conduccion-y-movilidad-en-la-comunidad",
+          "title": "Conducción y movilidad en la comunidad",
+          "strategies": [
+            "Mantener desplazamientos habituales: favorecer que continúe desplazándose a lugares conocidos, de acuerdo con sus capacidades y condiciones de seguridad.",
+            "Planificar los recorridos: antes de salir, revisar con la persona el destino, la ruta y el medio de transporte que utilizará.",
+            "Facilitar la orientación: procurar que lleve su identificación y un medio de comunicación, y que conozca cómo solicitar ayuda si la necesita.",
+            "Mantener rutas conocidas: evitar cambios innecesarios en los recorridos habituales y acordar qué hacer si se desorienta.",
+            "Valorar la seguridad de la conducción: no asumir que puede continuar conduciendo solo por conservar independencia en otras tareas; si aparecen dificultades de orientación, atención o respuesta, solicitar una valoración profesional y utilizar alternativas de transporte cuando sea necesario."
+          ]
+        },
+        {
+          "id": "gestion-financiera",
+          "title": "Gestión financiera",
+          "strategies": [
+            "Mantener su participación en las decisiones: permitir que la persona mayor siga tomando decisiones sobre sus gastos y preferencias económicas mientras pueda hacerlo de manera segura.",
+            "Organizar los documentos: conservar facturas, recibos, tarjetas y documentos financieros en lugares conocidos y seguros.",
+            "Facilitar la planificación: utilizar un calendario o una lista para recordar fechas de pago y compromisos económicos.",
+            "Favorecer la revisión de gastos: ayudarle a comprobar las cuentas y los pagos cuando lo solicite o cuando presente dificultades, explicando la información de forma sencilla.",
+            "Prevenir engaños: conversar sobre llamadas, mensajes, préstamos o solicitudes de dinero sospechosas, y ofrecer acompañamiento en trámites de riesgo sin quitarle innecesariamente el control de sus recursos."
+          ]
+        },
+        {
+          "id": "establecimiento-y-gestion-del-hogar",
+          "title": "Establecimiento y gestión del hogar",
+          "strategies": [
+            "Mantener rutinas domésticas: conservar horarios y formas conocidas de organizar las tareas del hogar.",
+            "Organizar los espacios: mantener los objetos de uso frecuente en lugares estables, identificables y accesibles.",
+            "Dividir las tareas: si una responsabilidad tiene varios pasos, ayudar a organizarla en acciones sencillas y realizables.",
+            "Favorecer la participación: permitir que continúe ordenando sus pertenencias, organizando espacios personales y colaborando en tareas domésticas seguras.",
+            "Supervisar las tareas de mayor riesgo: acompañar aquellas que impliquen escaleras, herramientas peligrosas o manipulación de equipos que puedan provocar accidentes, procurando que mantenga su participación en las demás labores."
+          ]
+        },
+        {
+          "id": "preparacion-de-la-comida-y-limpieza",
+          "title": "Preparación de la comida y limpieza",
+          "strategies": [
+            "Mantener procedimientos conocidos: favorecer que continúe preparando alimentos sencillos siguiendo recetas y rutinas habituales.",
+            "Organizar los ingredientes y utensilios: disponer los elementos necesarios antes de comenzar y conservarlos en lugares conocidos.",
+            "Facilitar el seguimiento de pasos: utilizar instrucciones breves o una receta escrita cuando la preparación requiera recordar varias acciones.",
+            "Favorecer la participación segura: permitir que lave alimentos, organice utensilios o realice tareas de limpieza que pueda completar de manera independiente.",
+            "Supervisar los riesgos: prestar especial atención al uso de estufas, hornos, cuchillos y productos de limpieza si presenta olvidos o dificultades para seguir los pasos, y adaptar la tarea según el riesgo observado."
+          ]
+        },
+        {
+          "id": "expresion-religiosa-y-espiritual",
+          "title": "Expresión religiosa y espiritual",
+          "strategies": [
+            "Mantener prácticas significativas: favorecer la continuidad de la oración, la lectura espiritual, la asistencia a servicios religiosos u otras prácticas que sean importantes para la persona.",
+            "Conservar horarios habituales: utilizar rutinas conocidas o recordatorios sencillos cuando ayuden a mantener su participación.",
+            "Facilitar el acceso: apoyar la organización del desplazamiento o la comunicación con su comunidad religiosa cuando sea necesario.",
+            "Favorecer la autonomía: permitir que elija cómo desea expresar sus creencias y en qué actividades quiere participar.",
+            "Respetar sus decisiones: brindar apoyo sin imponer prácticas ni sustituir sus preferencias personales."
+          ]
+        },
+        {
+          "id": "mantenimiento-de-seguridad",
+          "title": "Mantenimiento de seguridad",
+          "strategies": [
+            "Mantener el entorno organizado: procurar que los pasillos estén despejados, las zonas de paso bien iluminadas y los objetos peligrosos almacenados de manera segura.",
+            "Establecer rutinas preventivas: recordar acciones como cerrar puertas, apagar los equipos después de utilizarlos y verificar las condiciones del hogar.",
+            "Facilitar el acceso a ayuda: mantener visibles los números de emergencia y disponibles el teléfono y los documentos necesarios.",
+            "Reforzar medidas de prevención: conversar sobre qué hacer ante una caída, un incendio o una situación inesperada, mediante indicaciones claras y fáciles de recordar.",
+            "Comprobar los riesgos importantes: verificar las situaciones que puedan comprometer la seguridad, como dejar la estufa encendida o salir sin poder identificar el regreso, ajustando la supervisión a las dificultades observadas."
+          ]
+        },
+        {
+          "id": "compras",
+          "title": "Compras",
+          "strategies": [
+            "Mantener la participación: permitir que la persona mayor continúe comprando productos habituales en establecimientos conocidos cuando pueda hacerlo de manera segura.",
+            "Preparar una lista: ayudarle a anotar los productos necesarios para reducir olvidos y facilitar la organización de la compra.",
+            "Planificar el gasto: revisar previamente el dinero disponible y el costo aproximado de los productos, manteniendo su participación en las decisiones.",
+            "Favorecer recorridos conocidos: procurar que realice las compras en lugares familiares y planifique el transporte de regreso.",
+            "Brindar apoyo según la necesidad: acompañarla cuando presente dificultades para orientarse, manejar el dinero o completar la compra, permitiendo que elija los productos y participe en el pago en la medida de sus capacidades."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "salud",
+      "title": "Gestión de la salud",
+      "shortTitle": "Salud",
+      "icon": "heart",
+      "order": 3,
+      "activities": [
+        {
+          "id": "promocion-y-mantenimiento-de-la-salud-social-y-emocional",
+          "title": "Promoción y mantenimiento de la salud social y emocional",
+          "strategies": [
+            "Mantener horarios habituales para las actividades de autocuidado, descanso y participación social, procurando que la persona mayor conserve una rutina equilibrada.",
+            "Favorecer que exprese sus emociones, preocupaciones y preferencias mediante conversaciones cotidianas, escuchando sin apresurar sus respuestas.",
+            "Promover el contacto frecuente con familiares, amistades y personas significativas, respetando su deseo de participar o descansar.",
+            "Facilitar que continúe tomando decisiones sobre su apariencia personal, actividades cotidianas y formas de relacionarse, ofreciendo opciones sencillas cuando lo necesite.",
+            "Observar cambios persistentes en el estado de ánimo, el interés por las actividades o la interacción social, comunicándolos al equipo de salud cuando sea necesario."
+          ]
+        },
+        {
+          "id": "manejo-de-sintomas-y-afecciones",
+          "title": "Manejo de síntomas y afecciones",
+          "strategies": [
+            "Mantener una rutina diaria que facilite reconocer y comunicar molestias, dolor, cansancio, mareos u otros cambios en el estado habitual de la persona.",
+            "Utilizar un calendario o registro sencillo para anotar síntomas, su frecuencia y las circunstancias en las que aparecen, con apoyo del cuidador cuando sea necesario.",
+            "Favorecer que la persona describa cómo se siente con sus propias palabras, utilizando preguntas breves y concretas si presenta dificultad para expresarse.",
+            "Conservar a la vista las indicaciones entregadas por los profesionales de salud y ayudar a recordarlas sin modificar por cuenta propia los tratamientos establecidos.",
+            "Comunicar oportunamente al equipo de salud los cambios nuevos, persistentes o que empeoran; buscar atención urgente ante signos de alarma, como dificultad para respirar, pérdida repentina de fuerza o alteración súbita de la conciencia."
+          ]
+        },
+        {
+          "id": "comunicacion-con-el-sistema-de-salud",
+          "title": "Comunicación con el sistema de salud",
+          "strategies": [
+            "Mantener las citas médicas organizadas en un calendario visible, con fecha, hora, lugar y recordatorios sencillos.",
+            "Conservar en un sitio conocido los documentos de salud, resultados de exámenes y datos de contacto de los profesionales tratantes.",
+            "Favorecer que la persona mayor explique directamente sus inquietudes y necesidades durante las consultas, complementando la información solo cuando sea necesario.",
+            "Preparar antes de cada consulta una lista breve de dudas, síntomas recientes y cambios observados para facilitar la comunicación con el equipo de salud.",
+            "Acompañar o apoyar las llamadas, solicitudes de citas y trámites de salud cuando existan dificultades, procurando que la persona participe según sus capacidades."
+          ]
+        },
+        {
+          "id": "manejo-de-medicamentos",
+          "title": "Manejo de medicamentos",
+          "strategies": [
+            "Mantener los medicamentos organizados en un lugar seguro, siguiendo las indicaciones de conservación y evitando que queden al alcance de niños o personas que puedan ingerirlos accidentalmente.",
+            "Utilizar un horario visible o una lista sencilla que indique los medicamentos prescritos y los momentos establecidos para tomarlos.",
+            "Favorecer que la persona participe en la rutina de medicación, por ejemplo, identificando el horario o consultando la lista, con supervisión según sus necesidades.",
+            "Verificar, de acuerdo con el nivel de apoyo requerido, que se siga la prescripción y registrar las dificultades, olvidos o posibles efectos adversos para comunicarlos al profesional responsable.",
+            "Mantener actualizada la lista de medicamentos y consultar al profesional de salud ante dudas, olvidos o cambios en la toma. No modificar dosis, suspender ni incorporar medicamentos por cuenta propia."
+          ]
+        },
+        {
+          "id": "actividad-fisica",
+          "title": "Actividad física",
+          "strategies": [
+            "Mantener horarios regulares para caminar o realizar movimientos físicos que la persona ya conozca y pueda efectuar de forma segura, de acuerdo con sus capacidades y recomendaciones de salud.",
+            "Integrar el movimiento en las rutinas cotidianas, como caminar dentro de casa, levantarse de una silla o desplazarse por espacios familiares, según su tolerancia.",
+            "Procurar que utilice ropa y calzado cómodos, y que los espacios estén despejados e iluminados para disminuir el riesgo de caídas.",
+            "Recordar la importancia de hacer pausas cuando presente cansancio, dolor, mareo o falta de aire, sin presionarla para continuar.",
+            "Mantener la participación en actividades físicas que sean de su agrado y ajustar la frecuencia o intensidad según sus condiciones de salud y las orientaciones profesionales."
+          ]
+        },
+        {
+          "id": "manejo-nutricional",
+          "title": "Manejo nutricional",
+          "strategies": [
+            "Mantener horarios habituales para las comidas y procurar un ambiente tranquilo que facilite la concentración durante la alimentación.",
+            "Organizar los alimentos y utensilios en lugares conocidos para favorecer que la persona participe en la elección y preparación de sus comidas según sus capacidades.",
+            "Facilitar el acceso regular a agua y alimentos apropiados para sus necesidades, respetando las indicaciones nutricionales o médicas existentes.",
+            "Favorecer que participe en decisiones sobre sus preferencias alimentarias y conserve hábitos de alimentación compatibles con su estado de salud.",
+            "Observar cambios importantes en el apetito, el peso, la ingesta de líquidos o la capacidad para masticar y tragar, y comunicarlos al equipo de salud. Ante tos frecuente, atragantamiento o dificultad para tragar, solicitar valoración profesional sin modificar por cuenta propia las texturas o consistencias."
+          ]
+        },
+        {
+          "id": "manejo-de-dispositivos-de-cuidado-personal",
+          "title": "Manejo de dispositivos de cuidado personal",
+          "strategies": [
+            "Mantener los dispositivos de uso personal, como audífonos, gafas o ayudas para la movilidad, en lugares fijos, identificables y de fácil acceso.",
+            "Conservar las rutinas habituales de uso y limpieza de los dispositivos, siguiendo las indicaciones del fabricante o del profesional responsable.",
+            "Favorecer que la persona identifique cuándo necesita utilizar sus dispositivos y los coloque o retire por sí misma si puede hacerlo de forma segura.",
+            "Utilizar recordatorios breves para apoyar el uso de los dispositivos en los momentos habituales, evitando hacer por ella las acciones que puede realizar independientemente.",
+            "Revisar si presenta dificultades para utilizarlos, molestias, daños o cambios en su funcionamiento, solicitando orientación profesional cuando corresponda y evitando reparaciones o ajustes no autorizados."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "descanso",
+      "title": "Descanso y sueño",
+      "shortTitle": "Descanso",
+      "icon": "moon",
+      "order": 4,
+      "activities": [
+        {
+          "id": "descanso",
+          "title": "Descanso",
+          "strategies": [
+            "Mantener momentos de descanso durante el día, respetando las preferencias, necesidades y nivel de energía de la persona mayor.",
+            "Procurar que los periodos de reposo se realicen en un espacio tranquilo, cómodo y con iluminación adecuada.",
+            "Favorecer la alternancia entre las actividades cotidianas y los momentos de descanso, evitando el cansancio excesivo.",
+            "Permitir que la persona elija cuándo necesita descansar, ofreciendo orientación sencilla si presenta dificultades para reconocer o expresar su cansancio.",
+            "Observar si aparecen cambios frecuentes en la necesidad de descanso, somnolencia excesiva o cansancio persistente, y comunicarlos al equipo de salud cuando interfieran con su rutina habitual."
+          ]
+        },
+        {
+          "id": "preparacion-del-sueno",
+          "title": "Preparación del sueño",
+          "strategies": [
+            "Mantener horarios regulares para acostarse y levantarse, procurando que se ajusten a las preferencias y necesidades de la persona mayor.",
+            "Conservar una secuencia sencilla antes de dormir, como realizar la higiene personal, ponerse la ropa de dormir y preparar la habitación, respetando las capacidades que conserva.",
+            "Disminuir progresivamente los ruidos, las luces intensas y el uso de dispositivos electrónicos antes de acostarse, de acuerdo con las preferencias de la persona.",
+            "Mantener a la vista y en lugares conocidos los elementos necesarios para prepararse para dormir, como pijama, artículos de higiene y gafas, cuando las utilice.",
+            "Favorecer que la persona realice por sí misma los pasos de preparación que pueda completar, proporcionando recordatorios breves o ayuda puntual cuando lo requiera."
+          ]
+        },
+        {
+          "id": "participacion-del-sueno",
+          "title": "Participación del sueño",
+          "strategies": [
+            "Procurar que la habitación sea cómoda, ventilada y segura, con una temperatura agradable, iluminación apropiada y acceso despejado a la cama y al baño.",
+            "Mantener horarios consistentes de sueño y vigilia, acompañados de rutinas diurnas que favorezcan la regulación del ciclo de sueño.",
+            "Facilitar que los objetos necesarios durante la noche, como gafas, teléfono o ayudas para la movilidad, permanezcan en lugares accesibles y seguros.",
+            "Si la persona se despierta durante la noche, orientarla con calma y mediante indicaciones sencillas, evitando discusiones o cambios innecesarios en su rutina.",
+            "Observar cambios persistentes, como dificultad para conciliar el sueño, despertares frecuentes, inversión del horario de sueño, ronquidos intensos o somnolencia durante el día, y comunicarlos al profesional de salud."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trabajo",
+      "title": "Trabajo",
+      "shortTitle": "Trabajo",
+      "icon": "briefcase",
+      "order": 5,
+      "activities": [
+        {
+          "id": "interes-y-persecucion-laboral",
+          "title": "Interés y persecución laboral",
+          "strategies": [
+            "Mantener espacios de conversación en los que la persona exprese sus intereses, habilidades y preferencias relacionadas con el trabajo, respetando sus decisiones.",
+            "Favorecer la continuidad de actividades laborales significativas que se ajusten a sus capacidades, experiencia y condiciones de salud.",
+            "Conservar rutinas relacionadas con sus intereses ocupacionales, como consultar información sobre un oficio, organizar herramientas o mantenerse al tanto de su área de experiencia.",
+            "Facilitar que identifique metas laborales realistas mediante preguntas sencillas y opciones concretas, evitando imponer expectativas ajenas a sus intereses.",
+            "Promover que reconozca sus conocimientos y experiencias previas, procurando que continúe participando en decisiones sobre su futuro laboral."
+          ]
+        },
+        {
+          "id": "busqueda-y-adquisicion-de-empleo",
+          "title": "Búsqueda y adquisición de empleo",
+          "strategies": [
+            "Mantener organizada la información personal y laboral, como documentos de identificación, certificados, experiencia previa y referencias, en un lugar conocido.",
+            "Favorecer que la persona identifique oportunidades laborales acordes con sus intereses, experiencia y capacidades actuales.",
+            "Apoyar la organización de fechas, horarios y requisitos de postulaciones mediante calendarios, listas sencillas o recordatorios visibles.",
+            "Permitir que participe directamente en la elaboración de su hoja de vida, las comunicaciones con posibles empleadores y las decisiones sobre las ofertas, ofreciendo ayuda cuando la solicite o la necesite.",
+            "Si requiere acompañamiento, dividir los procedimientos en pasos sencillos y revisar con ella la información importante antes de enviarla, protegiendo sus datos personales."
+          ]
+        },
+        {
+          "id": "rendimiento-en-el-trabajo-y-su-mantenimiento",
+          "title": "Rendimiento en el trabajo y su mantenimiento",
+          "strategies": [
+            "Mantener horarios y rutinas laborales estables que faciliten la organización de las responsabilidades y la adaptación a las exigencias del trabajo.",
+            "Conservar los materiales, herramientas y documentos en lugares fijos, identificables y de fácil acceso.",
+            "Utilizar agendas, listas de verificación o recordatorios sencillos para apoyar el seguimiento de tareas y compromisos laborales.",
+            "Favorecer la realización de las tareas en una secuencia conocida, procurando reducir las distracciones y permitir el tiempo necesario para completarlas.",
+            "Observar si aparecen dificultades nuevas para seguir instrucciones, organizar tareas o utilizar herramientas; promover ajustes razonables y, cuando existan riesgos o afectación del desempeño, buscar orientación pertinente sin asumir automáticamente que debe abandonar su trabajo."
+          ]
+        },
+        {
+          "id": "preparacion-y-ajuste-de-la-jubilacion",
+          "title": "Preparación y ajuste de la jubilación",
+          "strategies": [
+            "Mantener conversaciones sobre las expectativas, preferencias y preocupaciones de la persona respecto a la jubilación, respetando sus decisiones y su ritmo de adaptación.",
+            "Favorecer la organización de una rutina posterior al retiro que incluya autocuidado, descanso, participación social y ocupaciones significativas.",
+            "Promover la continuidad de intereses y habilidades desarrollados durante la vida laboral mediante actividades cotidianas que la persona considere valiosas.",
+            "Apoyar la organización de documentos, trámites y compromisos relacionados con la jubilación mediante calendarios y listas sencillas, manteniendo su participación en las decisiones.",
+            "Facilitar el mantenimiento de relaciones con antiguos compañeros, familiares y amistades, respetando sus preferencias de contacto y favoreciendo la adaptación a los cambios de rol."
+          ]
+        },
+        {
+          "id": "exploracion-de-voluntariados",
+          "title": "Exploración de voluntariados",
+          "strategies": [
+            "Conversar sobre las causas, organizaciones y tipos de colaboración que despiertan el interés de la persona mayor, considerando sus experiencias y preferencias.",
+            "Facilitar información clara sobre oportunidades de voluntariado cercanas o relacionadas con sus intereses, utilizando fuentes confiables.",
+            "Favorecer que identifique las tareas, horarios y responsabilidades que estaría dispuesta a asumir, procurando que sean compatibles con sus capacidades y condiciones de salud.",
+            "Apoyar la organización de los pasos necesarios para contactar una organización o conocer sus requisitos, utilizando recordatorios sencillos cuando sea necesario.",
+            "Permitir que valore las opciones antes de comprometerse, respetando su decisión de participar, aplazar la vinculación o no continuar con la búsqueda."
+          ]
+        },
+        {
+          "id": "participacion-en-voluntariados",
+          "title": "Participación en voluntariados",
+          "strategies": [
+            "Mantener horarios y compromisos de voluntariado organizados en un calendario visible, con recordatorios cuando sean necesarios.",
+            "Favorecer la continuidad en tareas conocidas y significativas, procurando que las responsabilidades se ajusten a las capacidades y preferencias de la persona mayor.",
+            "Conservar organizados los elementos y materiales que necesita para cumplir sus responsabilidades, facilitando su identificación y acceso.",
+            "Promover la interacción con otros voluntarios y participantes, favoreciendo la comunicación, el sentido de pertenencia y la continuidad de los vínculos sociales.",
+            "Revisar periódicamente con la persona cómo se siente con sus responsabilidades y si necesita ajustes en los horarios, las instrucciones o el nivel de apoyo, priorizando su bienestar y seguridad."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ocio",
+      "title": "Ocio",
+      "shortTitle": "Ocio",
+      "icon": "sparkles",
+      "order": 6,
+      "activities": [
+        {
+          "id": "exploracion-del-ocio",
+          "title": "Exploración del ocio",
+          "strategies": [
+            "Mantener conversaciones sobre los pasatiempos, intereses y experiencias recreativas que han sido significativas para la persona mayor, respetando sus gustos y preferencias.",
+            "Facilitar información sencilla sobre opciones de ocio disponibles en su hogar, comunidad o entorno cercano, teniendo en cuenta sus intereses y posibilidades de participación.",
+            "Favorecer que explore alternativas relacionadas con sus preferencias, como escuchar música, leer, cuidar plantas, contemplar la naturaleza o conocer espacios comunitarios, sin imponer actividades que no le interesen.",
+            "Presentar las opciones de manera clara y concreta, permitiendo que elija entre alternativas cuando tenga dificultad para decidir o recordar las posibilidades disponibles.",
+            "Respetar el tiempo que necesita para reconocer sus preferencias y decidir si desea probar una nueva opción, continuar con una conocida o descansar."
+          ]
+        },
+        {
+          "id": "participacion-del-ocio",
+          "title": "Participación del ocio",
+          "strategies": [
+            "Mantener horarios habituales para disfrutar de actividades de ocio que la persona mayor considere agradables, incorporándolas a su rutina diaria o semanal.",
+            "Conservar los materiales y objetos necesarios para sus pasatiempos en lugares conocidos y accesibles, facilitando que pueda utilizarlos de forma independiente.",
+            "Favorecer la continuidad de actividades recreativas conocidas, ofreciendo recordatorios sencillos o ayuda para organizar los elementos necesarios cuando lo requiera.",
+            "Promover la participación en actividades de ocio compartidas con familiares, amistades o miembros de la comunidad, respetando su deseo de participar individualmente o en compañía.",
+            "Observar si presenta dificultades para iniciar, organizar o mantener sus pasatiempos y ofrecer el apoyo necesario, procurando que continúe tomando decisiones y realizando por sí misma las acciones que puede completar con seguridad."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "social",
+      "title": "Participación social",
+      "shortTitle": "Social",
+      "icon": "users",
+      "order": 7,
+      "activities": [
+        {
+          "id": "participacion-comunitaria",
+          "title": "Participación comunitaria",
+          "strategies": [
+            "Mantener la participación en espacios comunitarios conocidos, como parques, centros comunitarios, grupos culturales o encuentros vecinales, de acuerdo con los intereses de la persona mayor.",
+            "Conservar rutinas de asistencia a lugares habituales, utilizando calendarios o recordatorios sencillos para facilitar la organización de horarios y desplazamientos.",
+            "Favorecer que la persona participe en decisiones relacionadas con las actividades comunitarias a las que desea asistir, respetando sus preferencias y disponibilidad.",
+            "Promover el contacto con vecinos y miembros de la comunidad mediante conversaciones y encuentros cotidianos que contribuyan a mantener sus vínculos sociales.",
+            "Facilitar acompañamiento o apoyo para los desplazamientos cuando existan dificultades de orientación, memoria o movilidad, procurando que la persona conserve la mayor participación posible en sus decisiones y actividades."
+          ]
+        },
+        {
+          "id": "participacion-familiar",
+          "title": "Participación familiar",
+          "strategies": [
+            "Mantener espacios habituales de encuentro y comunicación con los familiares, procurando que la persona mayor participe en las conversaciones y decisiones familiares que le conciernen.",
+            "Favorecer su participación en las rutinas familiares cotidianas, como compartir las comidas, conversar o colaborar en responsabilidades sencillas que pueda realizar de manera segura.",
+            "Conservar las costumbres familiares significativas, como celebraciones, reuniones o llamadas, utilizando recordatorios cuando sea necesario.",
+            "Promover que exprese sus opiniones, preferencias y necesidades durante las interacciones familiares, permitiendo tiempo suficiente para responder y evitando completar sus frases innecesariamente.",
+            "Acordar con la familia formas de apoyo que respondan a sus necesidades reales, evitando la sobreprotección y respetando su privacidad, autonomía y participación en las decisiones personales."
+          ]
+        },
+        {
+          "id": "amistades",
+          "title": "Amistades",
+          "strategies": [
+            "Mantener el contacto periódico con amistades significativas mediante llamadas, mensajes, visitas o encuentros presenciales, según las preferencias de la persona mayor.",
+            "Conservar una lista sencilla de nombres y datos de contacto de sus amistades en un lugar accesible, si presenta dificultades para recordar esta información.",
+            "Favorecer la continuidad de encuentros en lugares conocidos y en horarios habituales, facilitando la organización de los desplazamientos cuando sea necesario.",
+            "Promover conversaciones sobre experiencias compartidas, intereses comunes y acontecimientos cotidianos, respetando el ritmo de comunicación de la persona mayor.",
+            "Ofrecer apoyo para organizar encuentros o iniciar comunicaciones cuando existan dificultades de planificación, procurando que sea la propia persona quien elija con quién desea mantener contacto."
+          ]
+        },
+        {
+          "id": "relaciones-intimas-de-pareja",
+          "title": "Relaciones íntimas de pareja",
+          "strategies": [
+            "Favorecer la continuidad de espacios cotidianos de comunicación con la pareja, permitiendo que ambos expresen sus necesidades, preferencias y expectativas.",
+            "Mantener costumbres compartidas que resulten significativas para ambos, como conversar, salir a caminar, compartir comidas o disfrutar de momentos de descanso.",
+            "Promover la participación de la persona mayor en las decisiones de pareja que le conciernen, ofreciendo explicaciones claras y tiempo suficiente para expresar su opinión.",
+            "Respetar la intimidad y privacidad de la pareja, facilitando espacios personales y compartidos de acuerdo con sus preferencias y necesidades.",
+            "Favorecer una comunicación respetuosa sobre el afecto y la intimidad, garantizando que cualquier acercamiento físico o sexual sea voluntario y consentido por ambas personas. Si surgen dificultades importantes de comunicación, conflictos persistentes o cambios que afecten la relación, considerar orientación profesional."
+          ]
+        },
+        {
+          "id": "participacion-en-grupo-de-pares",
+          "title": "Participación en grupo de pares",
+          "strategies": [
+            "Mantener la asistencia a grupos conocidos de personas con intereses o experiencias similares, como grupos recreativos, culturales, comunitarios o de personas mayores.",
+            "Conservar horarios y lugares habituales de encuentro, utilizando recordatorios sencillos para facilitar la asistencia y la organización de los compromisos.",
+            "Favorecer la participación en conversaciones grupales, respetando el tiempo que necesita la persona para comprender, recordar información y expresar sus ideas.",
+            "Promover que comparta opiniones, experiencias y conocimientos con sus compañeros, reconociendo sus aportes y evitando corregirla de manera innecesaria frente al grupo.",
+            "Facilitar acompañamiento o apoyo para llegar a los encuentros y recordar su programación cuando sea necesario, procurando que mantenga la iniciativa y la elección sobre su participación."
+          ]
+        }
+      ]
+    }
+  ]
+}

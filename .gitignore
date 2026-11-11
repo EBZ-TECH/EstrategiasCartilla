@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+web/node_modules/
+
+# Build
+web/dist/
+dist/
+*.local
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+web/src/**/*.tsbuildinfo
+
+# Editor
+.vscode/
+.idea/
+
+# Scripts temp
+scripts/raw_paras.json
+
+# Old parsed copies outside web (root only)
+/src/

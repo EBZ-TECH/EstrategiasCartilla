@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/tts.js": {
+      "includeFiles": "server/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

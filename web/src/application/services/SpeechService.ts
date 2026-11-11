@@ -8,7 +8,7 @@ function prepareSpeechText(text: string): string {
     .trim()
 }
 
-function splitChunks(text: string): string[] {
+function splitChunks(text: string, maxLen = 420): string[] {
   const prepared = prepareSpeechText(text)
   if (!prepared) return []
 
@@ -22,7 +22,7 @@ function splitChunks(text: string): string[] {
 
   for (const part of parts) {
     const candidate = buffer ? `${buffer} ${part}` : part
-    if (candidate.length > 180 && buffer) {
+    if (candidate.length > maxLen && buffer) {
       chunks.push(buffer)
       buffer = part
     } else {
@@ -41,9 +41,11 @@ class SpeechService {
   private queue: string[] = []
   private active = false
   private voicesReady: Promise<void> | null = null
+  private audio: HTMLAudioElement | null = null
+  private objectUrl: string | null = null
 
   isSupported(): boolean {
-    return typeof window !== 'undefined' && 'speechSynthesis' in window
+    return typeof window !== 'undefined' && typeof Audio !== 'undefined'
   }
 
   getState() {
@@ -64,8 +66,26 @@ class SpeechService {
     this.listeners.forEach((listener) => listener(state))
   }
 
+  private revokeUrl() {
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl)
+      this.objectUrl = null
+    }
+  }
+
+  private stopAudio() {
+    if (this.audio) {
+      this.audio.pause()
+      this.audio.src = ''
+      this.audio = null
+    }
+    this.revokeUrl()
+  }
+
   private ensureVoices(): Promise<void> {
-    if (!this.isSupported()) return Promise.resolve()
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      return Promise.resolve()
+    }
     if (this.voicesReady) return this.voicesReady
 
     this.voicesReady = new Promise((resolve) => {
@@ -114,21 +134,55 @@ class SpeechService {
   }
 
   private pickSpanishVoice(): SpeechSynthesisVoice | null {
+    if (!('speechSynthesis' in window)) return null
     const voices = window.speechSynthesis.getVoices()
     if (!voices.length) return null
     return [...voices].sort((a, b) => this.scoreVoice(b) - this.scoreVoice(a))[0] ?? null
   }
 
-  private speakChunk(chunk: string, fullText: string): Promise<void> {
-    return new Promise((resolve) => {
+  private async fetchNeuralAudio(chunk: string): Promise<Blob> {
+    const response = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: chunk }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`TTS HTTP ${response.status}`)
+    }
+
+    return response.blob()
+  }
+
+  private playBlob(blob: Blob): Promise<void> {
+    return new Promise((resolve, reject) => {
       if (!this.active) {
+        resolve()
+        return
+      }
+
+      this.stopAudio()
+      const url = URL.createObjectURL(blob)
+      this.objectUrl = url
+      const audio = new Audio(url)
+      this.audio = audio
+
+      audio.onended = () => resolve()
+      audio.onerror = () => reject(new Error('No se pudo reproducir el audio'))
+
+      void audio.play().catch(reject)
+    })
+  }
+
+  private speakBrowserChunk(chunk: string, fullText: string): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.active || !('speechSynthesis' in window)) {
         resolve()
         return
       }
 
       const utterance = new SpeechSynthesisUtterance(chunk)
       utterance.lang = 'es-CO'
-      // Un poco más pausado y grave suena menos “robot”
       utterance.rate = 0.92
       utterance.pitch = 0.95
       utterance.volume = 1
@@ -150,14 +204,27 @@ class SpeechService {
   private async playQueue(fullText: string) {
     for (let i = 0; i < this.queue.length; i += 1) {
       if (!this.active) break
-      await this.speakChunk(this.queue[i], fullText)
+      const chunk = this.queue[i]
+      this.notify(true, fullText)
+
+      try {
+        const blob = await this.fetchNeuralAudio(chunk)
+        if (!this.active) break
+        await this.playBlob(blob)
+      } catch {
+        // Si la API no está (o falla), cae al motor del navegador.
+        await this.ensureVoices()
+        if (!this.active) break
+        await this.speakBrowserChunk(chunk, fullText)
+      }
+
       if (!this.active) break
-      // Pequeña pausa entre frases para que suene más natural
-      await new Promise((resolve) => window.setTimeout(resolve, 180))
+      await new Promise((resolve) => window.setTimeout(resolve, 120))
     }
 
     this.queue = []
     this.active = false
+    this.stopAudio()
     this.notify(false)
   }
 
@@ -165,7 +232,6 @@ class SpeechService {
     if (!this.isSupported() || !text.trim()) return
 
     this.stop()
-    await this.ensureVoices()
 
     const fullText = text.trim()
     this.queue = splitChunks(fullText)
@@ -173,18 +239,18 @@ class SpeechService {
     this.currentText = fullText
     this.notify(true, fullText)
 
-    // Chrome a veces necesita cancel + speak en el siguiente tick
-    window.speechSynthesis.cancel()
     window.setTimeout(() => {
       void this.playQueue(fullText)
     }, 40)
   }
 
   stop() {
-    if (!this.isSupported()) return
     this.active = false
     this.queue = []
-    window.speechSynthesis.cancel()
+    this.stopAudio()
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
     this.notify(false)
   }
 

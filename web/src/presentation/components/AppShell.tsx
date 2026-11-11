@@ -41,7 +41,6 @@ export function AppShell() {
           <div className="footer__grid">
             <section className="footer__block" aria-labelledby="footer-company">
               <h2 id="footer-company">{company.name}</h2>
-              <p>{company.address}</p>
               <p>
                 Correo:{' '}
                 <a href={`mailto:${company.email}`}>{company.email}</a>

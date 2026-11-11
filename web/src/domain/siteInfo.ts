@@ -4,7 +4,6 @@ export const siteInfo = {
     name: 'Ebenezer Technologies (EBZ TEC)',
     shortName: 'EBZ TEC',
     email: 'ebztech2@gmail.com',
-    address: 'Cra. 48 #70-115, Barranquilla, Atlántico, Colombia',
   },
   developer: {
     name: 'Michael Andrés Lozada Blanco',

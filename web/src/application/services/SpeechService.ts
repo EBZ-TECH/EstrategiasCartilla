@@ -1,5 +1,8 @@
 type SpeechListener = (state: { speaking: boolean; text: string }) => void
 
+/** Umbral: por encima = voz del navegador (la que te gustaba en PC). */
+const QUALITY_VOICE_SCORE = 55
+
 function prepareSpeechText(text: string): string {
   return text
     .replace(/[·•]/g, ', ')
@@ -8,7 +11,7 @@ function prepareSpeechText(text: string): string {
     .trim()
 }
 
-function splitChunks(text: string, maxLen = 420): string[] {
+function splitChunks(text: string, maxLen = 180): string[] {
   const prepared = prepareSpeechText(text)
   if (!prepared) return []
 
@@ -43,9 +46,13 @@ class SpeechService {
   private voicesReady: Promise<void> | null = null
   private audio: HTMLAudioElement | null = null
   private objectUrl: string | null = null
+  private preferBrowser = true
 
   isSupported(): boolean {
-    return typeof window !== 'undefined' && typeof Audio !== 'undefined'
+    return (
+      typeof window !== 'undefined' &&
+      (typeof Audio !== 'undefined' || 'speechSynthesis' in window)
+    )
   }
 
   getState() {
@@ -101,7 +108,7 @@ class SpeechService {
       }
 
       window.speechSynthesis.addEventListener('voiceschanged', done)
-      window.setTimeout(done, 500)
+      window.setTimeout(done, 800)
     })
 
     return this.voicesReady
@@ -120,15 +127,16 @@ class SpeechService {
     else if (lang.includes('es-es') || lang.includes('es_es')) score += 25
     else score += 10
 
+    // Google en Chrome/Windows suele ser la que suena natural en PC
+    if (name.includes('google')) score += 55
     if (name.includes('natural') || name.includes('neural')) score += 50
-    if (name.includes('online') || name.includes('premium')) score += 35
-    if (name.includes('google')) score += 30
-    if (name.includes('sabina') || name.includes('helena') || name.includes('elvira')) score += 28
+    if (name.includes('online') || name.includes('premium')) score += 40
+    if (name.includes('sabina') || name.includes('helena') || name.includes('elvira')) score += 32
     if (name.includes('lucia') || name.includes('laura') || name.includes('dalia')) score += 24
     if (name.includes('paulina') || name.includes('catalina') || name.includes('mexican')) score += 22
     if (name.includes('microsoft') && !name.includes('desktop')) score += 12
-    if (name.includes('desktop') || name.includes('compact')) score -= 15
-    if (voice.localService === false) score += 8
+    if (name.includes('desktop') || name.includes('compact') || name.includes('espeak')) score -= 25
+    if (voice.localService === false) score += 10
 
     return score
   }
@@ -138,6 +146,12 @@ class SpeechService {
     const voices = window.speechSynthesis.getVoices()
     if (!voices.length) return null
     return [...voices].sort((a, b) => this.scoreVoice(b) - this.scoreVoice(a))[0] ?? null
+  }
+
+  private hasQualityBrowserVoice(): boolean {
+    const voice = this.pickSpanishVoice()
+    if (!voice) return false
+    return this.scoreVoice(voice) >= QUALITY_VOICE_SCORE
   }
 
   private async fetchNeuralAudio(chunk: string): Promise<Blob> {
@@ -184,7 +198,7 @@ class SpeechService {
       const utterance = new SpeechSynthesisUtterance(chunk)
       utterance.lang = 'es-CO'
       utterance.rate = 0.92
-      utterance.pitch = 0.95
+      utterance.pitch = 1
       utterance.volume = 1
 
       const voice = this.pickSpanishVoice()
@@ -207,19 +221,20 @@ class SpeechService {
       const chunk = this.queue[i]
       this.notify(true, fullText)
 
-      try {
-        const blob = await this.fetchNeuralAudio(chunk)
-        if (!this.active) break
-        await this.playBlob(blob)
-      } catch {
-        // Si la API no está (o falla), cae al motor del navegador.
-        await this.ensureVoices()
-        if (!this.active) break
+      if (this.preferBrowser) {
         await this.speakBrowserChunk(chunk, fullText)
+      } else {
+        try {
+          const blob = await this.fetchNeuralAudio(chunk)
+          if (!this.active) break
+          await this.playBlob(blob)
+        } catch {
+          await this.speakBrowserChunk(chunk, fullText)
+        }
       }
 
       if (!this.active) break
-      await new Promise((resolve) => window.setTimeout(resolve, 120))
+      await new Promise((resolve) => window.setTimeout(resolve, 160))
     }
 
     this.queue = []
@@ -232,12 +247,20 @@ class SpeechService {
     if (!this.isSupported() || !text.trim()) return
 
     this.stop()
+    await this.ensureVoices()
+
+    // En PC vuelve la voz buena del navegador; la API solo si el móvil no tiene una decente.
+    this.preferBrowser = this.hasQualityBrowserVoice()
 
     const fullText = text.trim()
-    this.queue = splitChunks(fullText)
+    this.queue = splitChunks(fullText, this.preferBrowser ? 180 : 420)
     this.active = true
     this.currentText = fullText
     this.notify(true, fullText)
+
+    if (this.preferBrowser && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
 
     window.setTimeout(() => {
       void this.playQueue(fullText)

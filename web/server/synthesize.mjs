@@ -1,7 +1,7 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
 
-/** Misma voz neural en PC y móvil (Colombia). */
-export const TTS_VOICE = 'es-CO-SalomeNeural'
+/** Voz de respaldo solo cuando el navegador no trae una buena (típico en móvil). */
+export const TTS_VOICE = 'es-MX-DaliaNeural'
 
 function escapeXml(text) {
   return text
@@ -14,7 +14,7 @@ function escapeXml(text) {
 
 /**
  * Sintetiza texto a MP3 con Microsoft Edge Neural TTS.
- * @param {string} text
+ * @param {text: string}
  * @returns {Promise<Buffer>}
  */
 export async function synthesizeTts(text) {
@@ -34,7 +34,11 @@ export async function synthesizeTts(text) {
 
   try {
     await tts.setMetadata(TTS_VOICE, OUTPUT_FORMAT.AUDIO_24KHZ_96KBITRATE_MONO_MP3)
-    const { audioStream } = tts.toStream(escapeXml(clean), { rate: 0.95 })
+    // Un poco más pausada suena menos “sintética”
+    const { audioStream } = tts.toStream(escapeXml(clean), {
+      rate: 0.9,
+      pitch: '-2Hz',
+    })
 
     const chunks = []
     await new Promise((resolve, reject) => {

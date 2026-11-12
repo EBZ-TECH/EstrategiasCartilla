@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { getUsageManualSpeechText, siteInfo } from '../../domain/siteInfo'
 import { useSpeech } from '../hooks/useSpeech'
 import { ReadAloudButton } from './ReadAloudButton'
@@ -11,31 +12,6 @@ interface Props {
 }
 
 const CLOSE_MS = 380
-
-function lockBodyScroll() {
-  const scrollY = window.scrollY
-  const body = document.body
-  body.dataset.manualScrollY = String(scrollY)
-  body.style.position = 'fixed'
-  body.style.top = `-${scrollY}px`
-  body.style.left = '0'
-  body.style.right = '0'
-  body.style.width = '100%'
-  body.style.overflow = 'hidden'
-}
-
-function unlockBodyScroll() {
-  const body = document.body
-  const scrollY = Number(body.dataset.manualScrollY || '0')
-  body.style.position = ''
-  body.style.top = ''
-  body.style.left = ''
-  body.style.right = ''
-  body.style.width = ''
-  body.style.overflow = ''
-  delete body.dataset.manualScrollY
-  window.scrollTo(0, scrollY)
-}
 
 export function UsageManual({
   open: controlledOpen,
@@ -51,7 +27,6 @@ export function UsageManual({
   const [visible, setVisible] = useState(false)
   const closeTimer = useRef<number | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const titleRef = useRef<HTMLHeadingElement>(null)
   const { stop } = useSpeech()
 
   const setOpen = (next: boolean) => {
@@ -76,7 +51,7 @@ export function UsageManual({
       closeTimer.current = null
     }
 
-    const resetScroll = () => {
+    const jumpToTop = () => {
       const el = scrollRef.current
       if (!el) return
       el.scrollTop = 0
@@ -84,18 +59,17 @@ export function UsageManual({
 
     if (open) {
       setMounted(true)
-      lockBodyScroll()
+      // Solo bloquea el scroll de la página; NO mueve el body con position:fixed
+      // (eso desplazaba el modal cuando se abría desde el pie).
+      document.documentElement.classList.add('manual-open')
+      document.body.classList.add('manual-open')
+
       const id = window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
           setVisible(true)
-          resetScroll()
-          // Reintentos: en móvil el layout termina después del primer paint
-          window.setTimeout(resetScroll, 50)
-          window.setTimeout(resetScroll, 180)
-          window.setTimeout(() => {
-            resetScroll()
-            titleRef.current?.focus({ preventScroll: true })
-          }, 320)
+          jumpToTop()
+          window.setTimeout(jumpToTop, 40)
+          window.setTimeout(jumpToTop, 200)
         })
       })
       return () => window.cancelAnimationFrame(id)
@@ -104,7 +78,8 @@ export function UsageManual({
     setVisible(false)
     closeTimer.current = window.setTimeout(() => {
       setMounted(false)
-      unlockBodyScroll()
+      document.documentElement.classList.remove('manual-open')
+      document.body.classList.remove('manual-open')
       closeTimer.current = null
     }, CLOSE_MS)
 
@@ -115,8 +90,8 @@ export function UsageManual({
 
   useEffect(() => {
     return () => {
-      // Si el componente se desmonta con el manual abierto
-      if (document.body.style.position === 'fixed') unlockBodyScroll()
+      document.documentElement.classList.remove('manual-open')
+      document.body.classList.remove('manual-open')
     }
   }, [])
 
@@ -131,95 +106,85 @@ export function UsageManual({
 
   const speechText = getUsageManualSpeechText()
 
+  const dialog =
+    mounted && typeof document !== 'undefined' ? (
+      <div
+        className={`manual-overlay${visible ? ' is-open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) markSeenAndClose()
+        }}
+      >
+        <div className="manual-card">
+          <button
+            type="button"
+            className="manual-card__close"
+            aria-label="Cerrar manual"
+            onClick={markSeenAndClose}
+          >
+            ×
+          </button>
+
+          <div className="manual-card__scroll" ref={scrollRef}>
+            <div className="manual-card__hero">
+              <img
+                className="manual-card__logo"
+                src={brand.logoSrc}
+                alt=""
+                width={96}
+                height={96}
+              />
+              <p className="manual-card__kicker">Bienvenida a la cartilla</p>
+              <h2 id={titleId} className="manual-card__title">
+                {usageManual.title}
+              </h2>
+              <p className="manual-card__lead">
+                Siga estos 7 pasos. Puede escucharlos si lo prefiere.
+              </p>
+              <div className="manual-card__listen">
+                <ReadAloudButton text={speechText} label="Escuchar el manual" size="lg" />
+              </div>
+            </div>
+
+            <ol className="manual-timeline">
+              {usageManual.steps.map((step, index) => (
+                <li key={step.title} className="manual-timeline__item">
+                  <span className="manual-timeline__rail" aria-hidden="true">
+                    <span className="manual-timeline__dot">{index + 1}</span>
+                  </span>
+                  <div className="manual-timeline__body">
+                    <h3>{step.title.replace(/^\d+\.\s*/, '')}</h3>
+                    <p>{step.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="manual-card__footer">
+            <button
+              type="button"
+              className="btn btn--primary manual-card__cta"
+              onClick={markSeenAndClose}
+            >
+              Empezar ahora
+            </button>
+            <p className="manual-card__footnote">
+              Podrá abrir este manual otra vez desde el inicio.
+            </p>
+          </div>
+        </div>
+      </div>
+    ) : null
+
   return (
     <>
       <button type="button" className="btn btn--secondary" onClick={() => setOpen(true)}>
         {triggerLabel}
       </button>
-
-      {mounted ? (
-        <div
-          className={`manual-overlay${visible ? ' is-open' : ''}`}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) markSeenAndClose()
-          }}
-        >
-          <div
-            className="manual-card"
-            onTouchStart={(event) => event.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="manual-card__close"
-              aria-label="Cerrar manual"
-              onClick={markSeenAndClose}
-            >
-              ×
-            </button>
-
-            <div
-              className="manual-card__scroll"
-              ref={scrollRef}
-              tabIndex={-1}
-            >
-              <div className="manual-card__hero">
-                <img
-                  className="manual-card__logo"
-                  src={brand.logoSrc}
-                  alt=""
-                  width={96}
-                  height={96}
-                />
-                <p className="manual-card__kicker">Bienvenida a la cartilla</p>
-                <h2
-                  id={titleId}
-                  className="manual-card__title"
-                  ref={titleRef}
-                  tabIndex={-1}
-                >
-                  {usageManual.title}
-                </h2>
-                <p className="manual-card__lead">
-                  Siga estos 7 pasos. Puede escucharlos si lo prefiere.
-                </p>
-                <div className="manual-card__listen">
-                  <ReadAloudButton text={speechText} label="Escuchar el manual" size="lg" />
-                </div>
-              </div>
-
-              <ol className="manual-timeline">
-                {usageManual.steps.map((step, index) => (
-                  <li key={step.title} className="manual-timeline__item">
-                    <span className="manual-timeline__rail" aria-hidden="true">
-                      <span className="manual-timeline__dot">{index + 1}</span>
-                    </span>
-                    <div className="manual-timeline__body">
-                      <h3>{step.title.replace(/^\d+\.\s*/, '')}</h3>
-                      <p>{step.body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            <div className="manual-card__footer">
-              <button
-                type="button"
-                className="btn btn--primary manual-card__cta"
-                onClick={markSeenAndClose}
-              >
-                Empezar ahora
-              </button>
-              <p className="manual-card__footnote">
-                Podrá abrir este manual otra vez desde el inicio.
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {dialog ? createPortal(dialog, document.body) : null}
     </>
   )
 }

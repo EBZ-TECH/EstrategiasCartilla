@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom'
+import { getLevelTheme, getOccupationTone } from '../../domain/colorThemes'
 import { DownloadPdfButton } from '../components/DownloadPdfButton'
 import { InfoToggle } from '../components/InfoToggle'
 import { NavCard } from '../components/NavCard'
@@ -12,6 +13,7 @@ export function LevelPage() {
   const { levelId } = useParams()
   const level = useLevel(levelId)
   const occupations = useOccupations(levelId)
+  const theme = getLevelTheme(level?.id)
   useSpeech({ stopOnUnmount: true })
 
   if (!level) return <NotFoundPage />
@@ -31,9 +33,17 @@ export function LevelPage() {
     .join(' ')
 
   return (
-    <div className="page page--mobile-first">
-      <header className="screen-head" style={{ ['--level-color' as string]: level.color }}>
+    <div
+      className="page page--mobile-first page--themed"
+      style={{
+        ['--level-color' as string]: theme.primary,
+        ['--theme-primary' as string]: theme.primary,
+        ['--theme-soft' as string]: theme.soft,
+      }}
+    >
+      <header className="screen-head">
         <p className="screen-head__badge">Nivel {level.order} de 4</p>
+        <p className="section__eyebrow">Temática {level.shortTitle}</p>
         <h1>{level.shortTitle}</h1>
         <p className="screen-head__hint">Toque un área para ver las actividades</p>
         <div className="screen-head__actions">
@@ -50,7 +60,10 @@ export function LevelPage() {
 
       <section className="section section--priority" aria-labelledby="areas-title">
         <div className="section__head section__head--compact">
-          <h2 id="areas-title">Áreas</h2>
+          <div>
+            <p className="section__eyebrow">Paso 2</p>
+            <h2 id="areas-title">Áreas</h2>
+          </div>
           <p>{occupations.length} opciones</p>
         </div>
 
@@ -61,7 +74,7 @@ export function LevelPage() {
               to={`/nivel/${level.id}/${occupation.id}`}
               title={`${index + 1}. ${occupation.shortTitle}`}
               subtitle={`${occupation.activities.length} actividades · tocar para abrir`}
-              tone={level.color}
+              tone={getOccupationTone(occupation.id, level.id)}
               icon={<OccupationIcon name={occupation.icon} />}
             />
           ))}

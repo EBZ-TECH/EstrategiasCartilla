@@ -1,14 +1,10 @@
-import { ReadAloudButton } from '../components/ReadAloudButton'
+import { getLevelTheme } from '../../domain/colorThemes'
+import { getUsageManualSpeechText, siteInfo } from '../../domain/siteInfo'
 import { NavCard } from '../components/NavCard'
-import { useCartillaMeta, useLevels } from '../hooks/useCartilla'
+import { ReadAloudButton } from '../components/ReadAloudButton'
+import { UsageManual } from '../components/UsageManual'
+import { useLevels } from '../hooks/useCartilla'
 import { useSpeech } from '../hooks/useSpeech'
-
-const LEVEL_TONES: Record<string, string> = {
-  normal: '#43A047',
-  leve: '#2F6FE0',
-  moderado: '#F2A012',
-  severo: '#E53935',
-}
 
 const LEVEL_HELP: Record<string, string> = {
   normal: 'Recuerda bien y se orienta en su día a día',
@@ -18,13 +14,14 @@ const LEVEL_HELP: Record<string, string> = {
 }
 
 export function HomePage() {
-  const meta = useCartillaMeta()
   const levels = useLevels()
+  const { brand, researchers } = siteInfo
   useSpeech({ stopOnUnmount: true })
 
   const introText = [
-    meta.title + '.',
-    'Toque un nivel para empezar.',
+    brand.name + '.',
+    brand.subtitle,
+    getUsageManualSpeechText(),
     'Estos son los niveles disponibles:',
     ...levels.map((level) => {
       const help = LEVEL_HELP[level.id] ?? level.title
@@ -35,32 +32,45 @@ export function HomePage() {
 
   return (
     <div className="page page--mobile-first home-page">
-      <header className="screen-head screen-head--home">
+      <header className="screen-head screen-head--home brand-hero">
+        <img className="brand-hero__logo" src={brand.logoSrc} alt={brand.logoAlt} />
         <p className="screen-head__badge">Cartilla virtual</p>
-        <h1>{meta.title}</h1>
-        <p className="screen-head__hint">
-          Toque un nivel para empezar. Todo está en botones grandes.
+        <h1 className="brand-hero__title">
+          <span className="brand-hero__name">{brand.name}</span>
+        </h1>
+        <p className="brand-hero__subtitle">{brand.subtitle}</p>
+        <p className="brand-hero__credit">
+          Investigación: {researchers.names.join(' · ')}
         </p>
-        <ReadAloudButton text={introText} label="Escuchar esta página" size="lg" />
+        <div className="screen-head__actions">
+          <UsageManual autoOpenOnce />
+          <ReadAloudButton text={introText} label="Escuchar esta página" size="lg" />
+        </div>
       </header>
 
       <section id="niveles" className="section section--priority" aria-labelledby="niveles-title">
         <div className="section__head section__head--compact">
-          <h2 id="niveles-title">Elija el nivel</h2>
+          <div>
+            <p className="section__eyebrow">Paso 1</p>
+            <h2 id="niveles-title">Elija el nivel</h2>
+          </div>
           <p>4 opciones claras</p>
         </div>
 
         <div className="nav-card-list">
-          {levels.map((level) => (
-            <NavCard
-              key={level.id}
-              to={`/nivel/${level.id}`}
-              title={`${level.order}. ${level.shortTitle}`}
-              subtitle={LEVEL_HELP[level.id] ?? level.title}
-              tone={LEVEL_TONES[level.id] ?? level.color}
-              icon={<span className="nav-card__index">{level.order}</span>}
-            />
-          ))}
+          {levels.map((level) => {
+            const theme = getLevelTheme(level.id)
+            return (
+              <NavCard
+                key={level.id}
+                to={`/nivel/${level.id}`}
+                title={`${level.order}. ${level.shortTitle}`}
+                subtitle={LEVEL_HELP[level.id] ?? level.title}
+                tone={theme.primary}
+                icon={<span className="nav-card__index">{level.order}</span>}
+              />
+            )
+          })}
         </div>
       </section>
     </div>

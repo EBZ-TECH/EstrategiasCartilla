@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { splitStrategyTitle } from '../../data/activityImages'
+import { getActivityTone, getLevelTheme, getOccupationTone } from '../../domain/colorThemes'
 import { ActivityPhoto, StrategyPhoto } from '../components/ActivityPhoto'
 import { ReadAloudButton } from '../components/ReadAloudButton'
 import { useActivity, useLevel, useOccupation } from '../hooks/useCartilla'
@@ -11,6 +12,7 @@ export function ActivityPage() {
   const level = useLevel(levelId)
   const occupation = useOccupation(levelId, occupationId)
   const activity = useActivity(levelId, occupationId, activityId)
+  const theme = getLevelTheme(level?.id)
   useSpeech({ stopOnUnmount: true })
 
   if (!level || !occupation || !activity) return <NotFoundPage />
@@ -21,17 +23,26 @@ export function ActivityPage() {
     index >= 0 && index < occupation.activities.length - 1
       ? occupation.activities[index + 1]
       : undefined
+  const activityTone = getActivityTone(occupation.id, Math.max(index, 0), level.id)
+  const areaTone = getOccupationTone(occupation.id, level.id)
 
   const allText = [
-    activity.title,
+    `Actividad: ${activity.title}.`,
     ...activity.strategies.map(
       (strategy, strategyIndex) => `Consejo ${strategyIndex + 1}. ${strategy}`,
     ),
   ].join('. ')
 
   return (
-    <div className="page page--mobile-first">
-      <header className="screen-head screen-head--photo" style={{ ['--level-color' as string]: level.color }}>
+    <div
+      className="page page--mobile-first page--themed"
+      style={{
+        ['--level-color' as string]: activityTone,
+        ['--theme-primary' as string]: activityTone,
+        ['--theme-soft' as string]: theme.soft,
+      }}
+    >
+      <header className="screen-head screen-head--photo">
         <ActivityPhoto
           activityId={activity.id}
           levelId={level.id}
@@ -40,9 +51,10 @@ export function ActivityPage() {
           className="activity-photo--hero"
         />
         <div className="screen-head__text">
-          <p className="screen-head__badge">
+          <p className="screen-head__badge" style={{ ['--level-color' as string]: areaTone }}>
             Actividad {index + 1} de {occupation.activities.length}
           </p>
+          <p className="section__eyebrow">{occupation.shortTitle}</p>
           <h1>
             {index + 1}. {activity.title}
           </h1>

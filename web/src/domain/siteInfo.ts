@@ -5,7 +5,7 @@ export const siteInfo = {
     shortName: 'ACTIVA-MENTE',
     subtitle:
       'Guía de estrategias ocupacionales según los niveles de funcionamiento cognitivo.',
-    logoSrc: '/brand/logo-activa-mente.jpg',
+    logoSrc: '/brand/logo-activa-mente.png',
     logoAlt: 'Logo de ACTIVA-MENTE: ocupaciones para la vida',
   },
   researchers: {

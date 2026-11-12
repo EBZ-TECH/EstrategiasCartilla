@@ -46,7 +46,7 @@ export function AppShell() {
         } as CSSProperties
       }
     >
-      <MosaicBackground primary={theme.primary} accent={theme.accent} />
+      <MosaicBackground />
 
       <a className="skip-link" href="#contenido">
         Ir al contenido

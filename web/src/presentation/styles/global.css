@@ -143,23 +143,76 @@ p {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  /* Visible desde el primer frame: no espera canvas */
+  opacity: 1;
 }
 
-.mosaic-bg {
+.mosaic-layer {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -40px;
   pointer-events: none;
+  transition: background-color 0.45s ease, opacity 0.45s ease;
 }
 
-.mosaic-bg--front {
-  opacity: 0;
-  transition: opacity 0.4s ease;
+/* Capa densa principal */
+.mosaic-layer--a {
+  opacity: 0.55;
+  background-image:
+    radial-gradient(
+      circle at 30% 35%,
+      color-mix(in srgb, var(--theme-primary, var(--primary)) 22%, transparent) 0 7px,
+      transparent 8px
+    ),
+    radial-gradient(
+      circle at 70% 65%,
+      color-mix(in srgb, var(--theme-accent, var(--accent)) 26%, transparent) 0 5px,
+      transparent 6px
+    ),
+    radial-gradient(
+      circle at 50% 20%,
+      color-mix(in srgb, var(--theme-primary, var(--primary)) 14%, transparent) 0 4px,
+      transparent 5px
+    );
+  background-size: 54px 58px, 54px 58px, 54px 58px;
+  background-position: 0 0, 27px 29px, 12px 40px;
 }
 
-.mosaic-bg--front.is-visible {
-  opacity: 0.88;
+/* Capa de relleno más fina */
+.mosaic-layer--b {
+  opacity: 0.4;
+  background-image:
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--theme-primary, var(--primary)) 18%, transparent) 0 3px,
+      transparent 4px
+    ),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--theme-accent, var(--accent)) 20%, transparent) 0 2.5px,
+      transparent 3.5px
+    );
+  background-size: 36px 40px, 36px 40px;
+  background-position: 0 0, 18px 20px;
+}
+
+/* Motivos tipo “icono” simples (cruces / diamantes) */
+.mosaic-layer--c {
+  opacity: 0.28;
+  background-image:
+    linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--theme-primary, var(--primary)) 16%, transparent) 25%,
+      transparent 25% 75%,
+      color-mix(in srgb, var(--theme-primary, var(--primary)) 16%, transparent) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--theme-accent, var(--accent)) 14%, transparent) 25%,
+      transparent 25% 75%,
+      color-mix(in srgb, var(--theme-accent, var(--accent)) 14%, transparent) 75%
+    );
+  background-size: 48px 48px, 64px 64px;
+  background-position: 8px 10px, 24px 0;
 }
 
 .topbar,

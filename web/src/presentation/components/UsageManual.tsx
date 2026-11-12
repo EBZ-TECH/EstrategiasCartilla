@@ -10,7 +10,7 @@ interface Props {
   triggerLabel?: string
 }
 
-const CLOSE_MS = 320
+const CLOSE_MS = 380
 
 export function UsageManual({
   open: controlledOpen,
@@ -19,7 +19,7 @@ export function UsageManual({
   triggerLabel = 'Manual de uso',
 }: Props) {
   const titleId = useId()
-  const { usageManual } = siteInfo
+  const { brand, usageManual } = siteInfo
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
   const [mounted, setMounted] = useState(false)
@@ -98,37 +98,47 @@ export function UsageManual({
             if (event.target === event.currentTarget) markSeenAndClose()
           }}
         >
-          <div className="manual-panel">
-            <div className="manual-panel__grab" aria-hidden="true" />
+          <div className="manual-card">
+            <button
+              type="button"
+              className="manual-card__close"
+              aria-label="Cerrar manual"
+              onClick={markSeenAndClose}
+            >
+              ×
+            </button>
 
-            <header className="manual-panel__head">
-              <div className="manual-panel__title-row">
-                <div>
-                  <p className="screen-head__badge">Ayuda</p>
-                  <h2 id={titleId}>{usageManual.title}</h2>
-                </div>
-                <button
-                  type="button"
-                  className="manual-close"
-                  aria-label="Cerrar manual"
-                  onClick={markSeenAndClose}
-                >
-                  ×
-                </button>
-              </div>
-              <p className="manual-panel__lead">
-                Pasos simples para usar la cartilla. También puede escucharlos.
+            <div className="manual-card__hero">
+              <img
+                className="manual-card__logo"
+                src={brand.logoSrc}
+                alt=""
+                width={96}
+                height={96}
+              />
+              <p className="manual-card__kicker">Bienvenida a la cartilla</p>
+              <h2 id={titleId} className="manual-card__title">
+                {usageManual.title}
+              </h2>
+              <p className="manual-card__lead">
+                Siga estos 7 pasos. Puede escucharlos si lo prefiere.
               </p>
-              <ReadAloudButton text={speechText} label="Escuchar el manual" size="lg" />
-            </header>
+              <div className="manual-card__listen">
+                <ReadAloudButton text={speechText} label="Escuchar el manual" size="lg" />
+              </div>
+            </div>
 
-            <ol className="manual-steps">
+            <ol className="manual-timeline">
               {usageManual.steps.map((step, index) => (
-                <li key={step.title} className="manual-step">
-                  <span className="manual-step__num" aria-hidden="true">
-                    {index + 1}
+                <li
+                  key={step.title}
+                  className="manual-timeline__item"
+                  style={{ ['--step-delay' as string]: `${80 + index * 45}ms` }}
+                >
+                  <span className="manual-timeline__rail" aria-hidden="true">
+                    <span className="manual-timeline__dot">{index + 1}</span>
                   </span>
-                  <div className="manual-step__copy">
+                  <div className="manual-timeline__body">
                     <h3>{step.title.replace(/^\d+\.\s*/, '')}</h3>
                     <p>{step.body}</p>
                   </div>
@@ -136,10 +146,11 @@ export function UsageManual({
               ))}
             </ol>
 
-            <div className="manual-panel__actions">
-              <button type="button" className="btn btn--primary" onClick={markSeenAndClose}>
-                Entendido
+            <div className="manual-card__footer">
+              <button type="button" className="btn btn--primary manual-card__cta" onClick={markSeenAndClose}>
+                Empezar ahora
               </button>
+              <p className="manual-card__footnote">Podrá abrir este manual otra vez desde el inicio.</p>
             </div>
           </div>
         </div>

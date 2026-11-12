@@ -25,6 +25,7 @@ export function UsageManual({
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
   const closeTimer = useRef<number | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { stop } = useSpeech()
 
   const setOpen = (next: boolean) => {
@@ -52,7 +53,10 @@ export function UsageManual({
     if (open) {
       setMounted(true)
       const id = window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => setVisible(true))
+        window.requestAnimationFrame(() => {
+          setVisible(true)
+          scrollRef.current?.scrollTo({ top: 0 })
+        })
       })
       document.body.style.overflow = 'hidden'
       return () => window.cancelAnimationFrame(id)
@@ -108,49 +112,53 @@ export function UsageManual({
               ×
             </button>
 
-            <div className="manual-card__hero">
-              <img
-                className="manual-card__logo"
-                src={brand.logoSrc}
-                alt=""
-                width={96}
-                height={96}
-              />
-              <p className="manual-card__kicker">Bienvenida a la cartilla</p>
-              <h2 id={titleId} className="manual-card__title">
-                {usageManual.title}
-              </h2>
-              <p className="manual-card__lead">
-                Siga estos 7 pasos. Puede escucharlos si lo prefiere.
-              </p>
-              <div className="manual-card__listen">
-                <ReadAloudButton text={speechText} label="Escuchar el manual" size="lg" />
+            <div className="manual-card__scroll" ref={scrollRef}>
+              <div className="manual-card__hero">
+                <img
+                  className="manual-card__logo"
+                  src={brand.logoSrc}
+                  alt=""
+                  width={96}
+                  height={96}
+                />
+                <p className="manual-card__kicker">Bienvenida a la cartilla</p>
+                <h2 id={titleId} className="manual-card__title">
+                  {usageManual.title}
+                </h2>
+                <p className="manual-card__lead">
+                  Siga estos 7 pasos. Puede escucharlos si lo prefiere.
+                </p>
+                <div className="manual-card__listen">
+                  <ReadAloudButton text={speechText} label="Escuchar el manual" size="lg" />
+                </div>
               </div>
+
+              <ol className="manual-timeline">
+                {usageManual.steps.map((step, index) => (
+                  <li key={step.title} className="manual-timeline__item">
+                    <span className="manual-timeline__rail" aria-hidden="true">
+                      <span className="manual-timeline__dot">{index + 1}</span>
+                    </span>
+                    <div className="manual-timeline__body">
+                      <h3>{step.title.replace(/^\d+\.\s*/, '')}</h3>
+                      <p>{step.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </div>
 
-            <ol className="manual-timeline">
-              {usageManual.steps.map((step, index) => (
-                <li
-                  key={step.title}
-                  className="manual-timeline__item"
-                  style={{ ['--step-delay' as string]: `${80 + index * 45}ms` }}
-                >
-                  <span className="manual-timeline__rail" aria-hidden="true">
-                    <span className="manual-timeline__dot">{index + 1}</span>
-                  </span>
-                  <div className="manual-timeline__body">
-                    <h3>{step.title.replace(/^\d+\.\s*/, '')}</h3>
-                    <p>{step.body}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-
             <div className="manual-card__footer">
-              <button type="button" className="btn btn--primary manual-card__cta" onClick={markSeenAndClose}>
+              <button
+                type="button"
+                className="btn btn--primary manual-card__cta"
+                onClick={markSeenAndClose}
+              >
                 Empezar ahora
               </button>
-              <p className="manual-card__footnote">Podrá abrir este manual otra vez desde el inicio.</p>
+              <p className="manual-card__footnote">
+                Podrá abrir este manual otra vez desde el inicio.
+              </p>
             </div>
           </div>
         </div>

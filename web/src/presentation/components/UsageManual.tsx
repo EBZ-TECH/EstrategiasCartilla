@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { getUsageManualSpeechText, siteInfo } from '../../domain/siteInfo'
 import { useSpeech } from '../hooks/useSpeech'
 import { ReadAloudButton } from './ReadAloudButton'
@@ -6,10 +6,11 @@ import { ReadAloudButton } from './ReadAloudButton'
 interface Props {
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  /** Si true, abre solo la primera vez. */
   autoOpenOnce?: boolean
   triggerLabel?: string
 }
+
+const CLOSE_MS = 320
 
 export function UsageManual({
   open: controlledOpen,
@@ -21,6 +22,9 @@ export function UsageManual({
   const { usageManual } = siteInfo
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
+  const [mounted, setMounted] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const closeTimer = useRef<number | null>(null)
   const { stop } = useSpeech()
 
   const setOpen = (next: boolean) => {
@@ -39,6 +43,34 @@ export function UsageManual({
     }
   }, [autoOpenOnce, usageManual.storageKey])
 
+  useEffect(() => {
+    if (closeTimer.current) {
+      window.clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+
+    if (open) {
+      setMounted(true)
+      const id = window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => setVisible(true))
+      })
+      document.body.style.overflow = 'hidden'
+      return () => window.cancelAnimationFrame(id)
+    }
+
+    setVisible(false)
+    document.body.style.overflow = ''
+    closeTimer.current = window.setTimeout(() => {
+      setMounted(false)
+      closeTimer.current = null
+    }, CLOSE_MS)
+
+    return () => {
+      if (closeTimer.current) window.clearTimeout(closeTimer.current)
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
   const markSeenAndClose = () => {
     try {
       window.localStorage.setItem(usageManual.storageKey, '1')
@@ -56,9 +88,9 @@ export function UsageManual({
         {triggerLabel}
       </button>
 
-      {open ? (
+      {mounted ? (
         <div
-          className="manual-overlay"
+          className={`manual-overlay${visible ? ' is-open' : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
@@ -67,9 +99,23 @@ export function UsageManual({
           }}
         >
           <div className="manual-panel">
+            <div className="manual-panel__grab" aria-hidden="true" />
+
             <header className="manual-panel__head">
-              <p className="screen-head__badge">Ayuda</p>
-              <h2 id={titleId}>{usageManual.title}</h2>
+              <div className="manual-panel__title-row">
+                <div>
+                  <p className="screen-head__badge">Ayuda</p>
+                  <h2 id={titleId}>{usageManual.title}</h2>
+                </div>
+                <button
+                  type="button"
+                  className="manual-close"
+                  aria-label="Cerrar manual"
+                  onClick={markSeenAndClose}
+                >
+                  ×
+                </button>
+              </div>
               <p className="manual-panel__lead">
                 Pasos simples para usar la cartilla. También puede escucharlos.
               </p>
@@ -77,10 +123,15 @@ export function UsageManual({
             </header>
 
             <ol className="manual-steps">
-              {usageManual.steps.map((step) => (
+              {usageManual.steps.map((step, index) => (
                 <li key={step.title} className="manual-step">
-                  <h3>{step.title}</h3>
-                  <p>{step.body}</p>
+                  <span className="manual-step__num" aria-hidden="true">
+                    {index + 1}
+                  </span>
+                  <div className="manual-step__copy">
+                    <h3>{step.title.replace(/^\d+\.\s*/, '')}</h3>
+                    <p>{step.body}</p>
+                  </div>
                 </li>
               ))}
             </ol>

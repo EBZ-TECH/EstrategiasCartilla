@@ -6,7 +6,6 @@ interface Props {
   className?: string
 }
 
-/** Mosaico denso tipo EVS, con iconos de cuidado y ocupaciones. */
 const ICONS = [
   '🧠',
   '🛁',
@@ -34,84 +33,114 @@ const ICONS = [
   '⏰',
 ]
 
+/** Mosaico con fundido suave al cambiar de nivel. */
 export function MosaicBackground({
-  primary = '#1C5AA6',
-  accent = '#F2A012',
+  primary = '#1F8A70',
+  accent = '#F2C94C',
   className = '',
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const colorsRef = useRef({ primary, accent })
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    let frame = 0
+    let cancelled = false
+    let resizeFrame = 0
 
     const paint = () => {
-      const parent = canvas.parentElement
-      const width = parent?.clientWidth || window.innerWidth
-      const height = Math.max(parent?.clientHeight || window.innerHeight, window.innerHeight)
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-
-      canvas.width = Math.floor(width * dpr)
-      canvas.height = Math.floor(height * dpr)
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.clearRect(0, 0, width, height)
-
-      paintLayer(ctx, width, height, {
-        stepX: 52,
-        stepY: 56,
-        fontSize: 22,
-        baseAlpha: 0.12,
-        goldEvery: 8,
-        skipA: 19,
-        skipB: 29,
-        oddOffset: 0.42,
-        primary,
-        accent,
-        seedSalt: 0,
-      })
-
-      paintLayer(ctx, width, height, {
-        stepX: 38,
-        stepY: 42,
-        fontSize: 14,
-        baseAlpha: 0.07,
-        goldEvery: 7,
-        skipA: 13,
-        skipB: 17,
-        oddOffset: 0.55,
-        primary,
-        accent,
-        seedSalt: 41,
-      })
+      if (cancelled) return
+      paintCanvas(canvas, colorsRef.current.primary, colorsRef.current.accent)
     }
 
     const onResize = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(paint)
+      cancelAnimationFrame(resizeFrame)
+      resizeFrame = requestAnimationFrame(paint)
     }
 
+    // Primera pintura
+    colorsRef.current = { primary, accent }
     paint()
+    canvas.classList.add('is-visible')
+
     window.addEventListener('resize', onResize)
     return () => {
+      cancelled = true
       window.removeEventListener('resize', onResize)
-      cancelAnimationFrame(frame)
+      cancelAnimationFrame(resizeFrame)
     }
+  }, [])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    if (
+      colorsRef.current.primary === primary &&
+      colorsRef.current.accent === accent
+    ) {
+      return
+    }
+
+    canvas.classList.remove('is-visible')
+    const timer = window.setTimeout(() => {
+      colorsRef.current = { primary, accent }
+      paintCanvas(canvas, primary, accent)
+      requestAnimationFrame(() => canvas.classList.add('is-visible'))
+    }, 180)
+
+    return () => window.clearTimeout(timer)
   }, [primary, accent])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`mosaic-bg ${className}`.trim()}
-      aria-hidden="true"
-    />
+    <div className={`mosaic-stack ${className}`.trim()} aria-hidden="true">
+      <canvas ref={canvasRef} className="mosaic-bg mosaic-bg--front" />
+    </div>
   )
+}
+
+function paintCanvas(canvas: HTMLCanvasElement, primary: string, accent: string) {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const width = window.innerWidth
+  const height = Math.max(window.innerHeight, document.documentElement.scrollHeight || 0)
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
+  canvas.width = Math.floor(width * dpr)
+  canvas.height = Math.floor(height * dpr)
+  canvas.style.width = `${width}px`
+  canvas.style.height = `${height}px`
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.clearRect(0, 0, width, height)
+
+  paintLayer(ctx, width, height, {
+    stepX: 52,
+    stepY: 56,
+    fontSize: 22,
+    baseAlpha: 0.11,
+    goldEvery: 8,
+    skipA: 19,
+    skipB: 29,
+    oddOffset: 0.42,
+    primary,
+    accent,
+    seedSalt: 0,
+  })
+
+  paintLayer(ctx, width, height, {
+    stepX: 38,
+    stepY: 42,
+    fontSize: 14,
+    baseAlpha: 0.06,
+    goldEvery: 7,
+    skipA: 13,
+    skipB: 17,
+    oddOffset: 0.55,
+    primary,
+    accent,
+    seedSalt: 41,
+  })
 }
 
 function paintLayer(
@@ -156,12 +185,11 @@ function paintLayer(
       ctx.font = `${opts.fontSize}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      // Sombra de color temático detrás del emoji para amarrar la textura al nivel
       ctx.fillStyle = useAccent ? opts.accent : opts.primary
       ctx.beginPath()
       ctx.arc(0, 0, opts.fontSize * 0.55, 0, Math.PI * 2)
       ctx.fill()
-      ctx.globalAlpha = Math.min(0.55, alpha + 0.25)
+      ctx.globalAlpha = Math.min(0.5, alpha + 0.22)
       ctx.fillText(icon, 0, 0)
       ctx.restore()
     }

@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type CSSProperties } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { speechService } from '../../application/services/SpeechService'
-import { getLevelTheme, getOccupationTone } from '../../domain/colorThemes'
+import { getLevelTheme } from '../../domain/colorThemes'
 import { siteInfo } from '../../domain/siteInfo'
 import { useStickyBack } from '../hooks/useStickyBack'
 import { BackNav } from './BackNav'
@@ -10,8 +10,8 @@ import { MosaicBackground } from './MosaicBackground'
 
 function routeThemeIds(pathname: string) {
   const parts = pathname.split('/').filter(Boolean)
-  if (parts[0] !== 'nivel') return { levelId: undefined, occupationId: undefined }
-  return { levelId: parts[1], occupationId: parts[2] }
+  if (parts[0] !== 'nivel') return { levelId: undefined }
+  return { levelId: parts[1] }
 }
 
 export function AppShell() {
@@ -20,35 +20,33 @@ export function AppShell() {
   const back = useStickyBack()
   const { brand, company, developer, researchers } = siteInfo
 
-  const { levelId, occupationId } = routeThemeIds(location.pathname)
+  const { levelId } = routeThemeIds(location.pathname)
+  // Solo cambia con el nivel (no con cada área) para evitar parpadeos.
   const theme = useMemo(() => getLevelTheme(levelId), [levelId])
-  const mosaicPrimary = occupationId
-    ? getOccupationTone(occupationId, levelId)
-    : theme.primary
 
   useEffect(() => {
     speechService.stop()
   }, [location.pathname])
 
-  useEffect(() => {
-    const root = document.documentElement
-    root.style.setProperty('--theme-primary', theme.primary)
-    root.style.setProperty('--theme-soft', theme.soft)
-    root.style.setProperty('--theme-accent', theme.accent)
-    root.style.setProperty('--theme-ink', theme.ink)
-    root.style.setProperty('--primary', theme.primary)
-    root.style.setProperty('--primary-deep', theme.ink)
-    root.style.setProperty('--primary-soft', theme.soft)
-    root.style.setProperty('--accent', theme.accent)
-    root.style.setProperty('--bg', theme.soft)
-  }, [theme])
-
   return (
     <div
       className={`app-shell${isHome ? ' app-shell--home' : ''}`}
-      style={{ ['--level-color' as string]: theme.primary }}
+      style={
+        {
+          ['--level-color' as string]: theme.primary,
+          ['--theme-primary' as string]: theme.primary,
+          ['--theme-soft' as string]: theme.soft,
+          ['--theme-accent' as string]: theme.accent,
+          ['--theme-ink' as string]: theme.ink,
+          ['--primary' as string]: theme.primary,
+          ['--primary-deep' as string]: theme.ink,
+          ['--primary-soft' as string]: theme.soft,
+          ['--accent' as string]: theme.accent,
+          ['--bg' as string]: theme.soft,
+        } as CSSProperties
+      }
     >
-      <MosaicBackground primary={mosaicPrimary} accent={theme.accent} />
+      <MosaicBackground primary={theme.primary} accent={theme.accent} />
 
       <a className="skip-link" href="#contenido">
         Ir al contenido
@@ -56,8 +54,10 @@ export function AppShell() {
 
       <header className={`topbar${isHome ? ' topbar--home' : ''}`}>
         <div className="topbar__inner">
-          {back ? <BackNav to={back.to} label={back.label} compact /> : (
-            <div className="topbar__brand-chip" aria-hidden={false}>
+          {back ? (
+            <BackNav to={back.to} label={back.label} compact />
+          ) : (
+            <div className="topbar__brand-chip">
               <img src={brand.logoSrc} alt="" className="topbar__brand-logo" />
               <strong>{brand.shortName}</strong>
             </div>

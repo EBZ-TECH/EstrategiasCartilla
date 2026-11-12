@@ -179,9 +179,9 @@ export async function downloadLevelPdf(
         `Preparando ${occupation.shortTitle}: ${actIndex + 1}/${occupation.activities.length}`,
       )
 
-      const imageUrl = getActivityImage(activity.id).replace(/w=\d+/, 'w=700')
+      const imageUrl = getActivityImage(activity.id, level.id, occupation.id)
       const imageData = await loadImageDataUrl(imageUrl)
-      const imageHeight = imageData ? 42 : 0
+      const imageHeight = imageData ? 48 : 0
       const titleLines = wrapText(
         doc,
         `${actIndex + 1}. ${activity.title}`,
@@ -199,10 +199,11 @@ export async function downloadLevelPdf(
 
       if (imageData) {
         y = ensureSpace(imageHeight + 4, y)
+        const format = imageData.startsWith('data:image/png') ? 'PNG' : 'JPEG'
         try {
-          doc.addImage(imageData, 'JPEG', PAGE.marginX, y, contentWidth, imageHeight, undefined, 'FAST')
+          doc.addImage(imageData, format, PAGE.marginX, y, contentWidth, imageHeight, undefined, 'FAST')
         } catch {
-          // Si el formato no es JPEG válido, se omite la imagen
+          // Si el formato no es válido, se omite la imagen
         }
         y += imageHeight + 5
       }

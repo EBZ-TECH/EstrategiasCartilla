@@ -50,6 +50,8 @@ export function OccupationPage() {
               image={
                 <ActivityPhoto
                   activityId={activity.id}
+                  levelId={level.id}
+                  occupationId={occupation.id}
                   alt={`Imagen de ${activity.title}`}
                   className="activity-photo--card"
                 />

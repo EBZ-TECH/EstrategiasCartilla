@@ -34,6 +34,8 @@ export function ActivityPage() {
       <header className="screen-head screen-head--photo" style={{ ['--level-color' as string]: level.color }}>
         <ActivityPhoto
           activityId={activity.id}
+          levelId={level.id}
+          occupationId={occupation.id}
           alt={`Imagen de ${activity.title}`}
           className="activity-photo--hero"
         />
@@ -62,8 +64,10 @@ export function ActivityPage() {
             >
               <StrategyPhoto
                 activityId={activity.id}
+                levelId={level.id}
+                occupationId={occupation.id}
                 strategyText={strategy}
-                alt={`Imagen del consejo ${strategyIndex + 1}`}
+                alt={`Ilustración del consejo ${strategyIndex + 1}`}
                 className="activity-photo--strategy"
               />
               <div className="strategy-card__content">

@@ -12,6 +12,31 @@ interface Props {
 
 const CLOSE_MS = 380
 
+function lockBodyScroll() {
+  const scrollY = window.scrollY
+  const body = document.body
+  body.dataset.manualScrollY = String(scrollY)
+  body.style.position = 'fixed'
+  body.style.top = `-${scrollY}px`
+  body.style.left = '0'
+  body.style.right = '0'
+  body.style.width = '100%'
+  body.style.overflow = 'hidden'
+}
+
+function unlockBodyScroll() {
+  const body = document.body
+  const scrollY = Number(body.dataset.manualScrollY || '0')
+  body.style.position = ''
+  body.style.top = ''
+  body.style.left = ''
+  body.style.right = ''
+  body.style.width = ''
+  body.style.overflow = ''
+  delete body.dataset.manualScrollY
+  window.scrollTo(0, scrollY)
+}
+
 export function UsageManual({
   open: controlledOpen,
   onOpenChange,
@@ -26,6 +51,7 @@ export function UsageManual({
   const [visible, setVisible] = useState(false)
   const closeTimer = useRef<number | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
   const { stop } = useSpeech()
 
   const setOpen = (next: boolean) => {
@@ -50,30 +76,49 @@ export function UsageManual({
       closeTimer.current = null
     }
 
+    const resetScroll = () => {
+      const el = scrollRef.current
+      if (!el) return
+      el.scrollTop = 0
+    }
+
     if (open) {
       setMounted(true)
+      lockBodyScroll()
       const id = window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
           setVisible(true)
-          scrollRef.current?.scrollTo({ top: 0 })
+          resetScroll()
+          // Reintentos: en móvil el layout termina después del primer paint
+          window.setTimeout(resetScroll, 50)
+          window.setTimeout(resetScroll, 180)
+          window.setTimeout(() => {
+            resetScroll()
+            titleRef.current?.focus({ preventScroll: true })
+          }, 320)
         })
       })
-      document.body.style.overflow = 'hidden'
       return () => window.cancelAnimationFrame(id)
     }
 
     setVisible(false)
-    document.body.style.overflow = ''
     closeTimer.current = window.setTimeout(() => {
       setMounted(false)
+      unlockBodyScroll()
       closeTimer.current = null
     }, CLOSE_MS)
 
     return () => {
       if (closeTimer.current) window.clearTimeout(closeTimer.current)
-      document.body.style.overflow = ''
     }
   }, [open])
+
+  useEffect(() => {
+    return () => {
+      // Si el componente se desmonta con el manual abierto
+      if (document.body.style.position === 'fixed') unlockBodyScroll()
+    }
+  }, [])
 
   const markSeenAndClose = () => {
     try {
@@ -102,7 +147,10 @@ export function UsageManual({
             if (event.target === event.currentTarget) markSeenAndClose()
           }}
         >
-          <div className="manual-card">
+          <div
+            className="manual-card"
+            onTouchStart={(event) => event.stopPropagation()}
+          >
             <button
               type="button"
               className="manual-card__close"
@@ -112,7 +160,11 @@ export function UsageManual({
               ×
             </button>
 
-            <div className="manual-card__scroll" ref={scrollRef}>
+            <div
+              className="manual-card__scroll"
+              ref={scrollRef}
+              tabIndex={-1}
+            >
               <div className="manual-card__hero">
                 <img
                   className="manual-card__logo"
@@ -122,7 +174,12 @@ export function UsageManual({
                   height={96}
                 />
                 <p className="manual-card__kicker">Bienvenida a la cartilla</p>
-                <h2 id={titleId} className="manual-card__title">
+                <h2
+                  id={titleId}
+                  className="manual-card__title"
+                  ref={titleRef}
+                  tabIndex={-1}
+                >
                   {usageManual.title}
                 </h2>
                 <p className="manual-card__lead">

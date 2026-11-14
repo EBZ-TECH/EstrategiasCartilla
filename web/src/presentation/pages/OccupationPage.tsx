@@ -22,9 +22,9 @@ export function OccupationPage() {
     `Área: ${occupation.title}.`,
     `Hay ${occupation.activities.length} actividades.`,
     ...occupation.activities.map((activity, index) => {
-      return `Actividad ${index + 1}: ${activity.title}. Tiene ${activity.strategies.length} consejos.`
+      return `Actividad ${index + 1}: ${activity.title}. Tiene ${activity.strategies.length} estrategias.`
     }),
-    'Toque una actividad para ver los consejos.',
+    'Toque una actividad para ver las estrategias.',
   ].join(' ')
 
   return (
@@ -59,7 +59,7 @@ export function OccupationPage() {
               key={activity.id}
               to={`/nivel/${level.id}/${occupation.id}/${activity.id}`}
               title={`${index + 1}. ${activity.title}`}
-              subtitle={`${activity.strategies.length} consejos · tocar para abrir`}
+              subtitle={`${activity.strategies.length} estrategias · tocar para abrir`}
               tone={getActivityTone(occupation.id, index, level.id)}
               image={
                 <ActivityPhoto

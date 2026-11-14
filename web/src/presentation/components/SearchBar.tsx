@@ -10,7 +10,7 @@ export function SearchBar() {
   return (
     <div className="search">
       <label className="search__label" htmlFor={inputId}>
-        Buscar una actividad o consejo
+        Buscar una actividad o estrategia
       </label>
       <input
         id={inputId}

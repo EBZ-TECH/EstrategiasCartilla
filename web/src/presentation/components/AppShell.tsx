@@ -18,7 +18,7 @@ export function AppShell() {
   const location = useLocation()
   const isHome = location.pathname === '/'
   const back = useStickyBack()
-  const { brand, company, developer, researchers } = siteInfo
+  const { brand, company, developer, researchers, university } = siteInfo
 
   const { levelId } = routeThemeIds(location.pathname)
   // Solo cambia con el nivel (no con cada área) para evitar parpadeos.
@@ -78,6 +78,15 @@ export function AppShell() {
           <div className="footer__grid">
             <section className="footer__block" aria-labelledby="footer-research">
               <h2 id="footer-research">{researchers.title}</h2>
+              <div className="footer__udes">
+                <img src={university.logoSrc} alt={university.logoAlt} />
+                <div>
+                  <p>
+                    <strong>{university.name}</strong>
+                  </p>
+                  <p>{university.note}</p>
+                </div>
+              </div>
               {researchers.names.map((name) => (
                 <p key={name}>
                   <strong>{name}</strong>

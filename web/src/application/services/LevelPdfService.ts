@@ -1,12 +1,13 @@
 import { jsPDF } from 'jspdf'
 import { getActivityImage } from '../../data/activityImages'
+import { siteInfo } from '../../domain/siteInfo'
 import type { CognitiveLevel } from '../../domain/types'
 
 const PAGE = {
   width: 210,
   height: 297,
   marginX: 16,
-  marginTop: 18,
+  marginTop: 20,
   marginBottom: 18,
 }
 
@@ -44,135 +45,208 @@ function wrapText(doc: jsPDF, text: string, maxWidth: number, fontSize: number):
   return doc.splitTextToSize(text, maxWidth) as string[]
 }
 
+function lighten(rgb: [number, number, number], amount: number): [number, number, number] {
+  return rgb.map((channel) => Math.min(255, Math.round(channel + (255 - channel) * amount))) as [
+    number,
+    number,
+    number,
+  ]
+}
+
 export async function downloadLevelPdf(
   level: CognitiveLevel,
   onProgress?: (message: string) => void,
 ): Promise<void> {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const contentWidth = PAGE.width - PAGE.marginX * 2
-  const [cr, cg, cb] = hexToRgb(level.color || '#1C5AA6')
+  const [cr, cg, cb] = hexToRgb(level.color || '#1F8A70')
+  const soft = lighten([cr, cg, cb], 0.88)
+  const softMid = lighten([cr, cg, cb], 0.72)
+  const { brand, university, researchers } = siteInfo
   let page = 1
+
+  const brandLogo = await loadImageDataUrl(brand.logoSrc)
+  const udesLogo = await loadImageDataUrl(university.logoSrc)
+
+  const paintPageChrome = () => {
+    doc.setFillColor(soft[0], soft[1], soft[2])
+    doc.rect(0, 0, PAGE.width, PAGE.height, 'F')
+    doc.setFillColor(cr, cg, cb)
+    doc.rect(0, 0, 7, PAGE.height, 'F')
+    doc.setFillColor(242, 201, 76)
+    doc.rect(7, 0, 2.2, PAGE.height, 'F')
+  }
 
   const ensureSpace = (needed: number, y: number): number => {
     if (y + needed <= PAGE.height - PAGE.marginBottom) return y
     addFooter()
     doc.addPage()
     page += 1
+    paintPageChrome()
     return PAGE.marginTop
   }
 
   const addFooter = () => {
-    doc.setDrawColor(200, 210, 225)
-    doc.setLineWidth(0.3)
-    doc.line(PAGE.marginX, PAGE.height - 12, PAGE.width - PAGE.marginX, PAGE.height - 12)
+    doc.setFillColor(255, 255, 255)
+    doc.roundedRect(PAGE.marginX, PAGE.height - 14, contentWidth, 8, 2, 2, 'F')
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(8)
-    doc.setTextColor(90, 107, 130)
-    doc.text('Cartilla de cuidado · EBZ TEC', PAGE.marginX, PAGE.height - 7)
-    doc.text(`Página ${page}`, PAGE.width - PAGE.marginX, PAGE.height - 7, { align: 'right' })
+    doc.setTextColor(70, 90, 110)
+    doc.text('ACTIVA-MENTE · Cartilla de estrategias ocupacionales', PAGE.marginX + 3, PAGE.height - 9)
+    doc.setTextColor(cr, cg, cb)
+    doc.setFont('helvetica', 'bold')
+    doc.text(`${page}`, PAGE.width - PAGE.marginX - 3, PAGE.height - 9, { align: 'right' })
   }
 
-  // Portada
+  // Portada tipo cartilla
   onProgress?.('Creando portada…')
+  paintPageChrome()
   doc.setFillColor(cr, cg, cb)
-  doc.rect(0, 0, PAGE.width, 92, 'F')
-  doc.setFillColor(242, 245, 250)
-  doc.rect(0, 92, PAGE.width, PAGE.height - 92, 'F')
+  doc.roundedRect(PAGE.marginX, 18, contentWidth, 78, 6, 6, 'F')
+  doc.setFillColor(255, 255, 255)
+  doc.circle(PAGE.marginX + 28, 48, 18, 'F')
+
+  if (brandLogo) {
+    try {
+      doc.addImage(brandLogo, 'PNG', PAGE.marginX + 12, 32, 32, 32)
+    } catch {
+      // ignore
+    }
+  }
 
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(12)
-  doc.text(`NIVEL ${level.order} DE 4`, PAGE.marginX, 28)
-  doc.setFontSize(28)
-  const titleLines = wrapText(doc, level.title, contentWidth, 28)
-  doc.text(titleLines, PAGE.marginX, 48)
-
+  doc.setFontSize(11)
+  doc.text(`NIVEL ${level.order} DE 4`, PAGE.marginX + 52, 38)
+  doc.setFontSize(22)
+  const coverTitle = wrapText(doc, level.shortTitle.toUpperCase(), contentWidth - 60, 22)
+  doc.text(coverTitle, PAGE.marginX + 52, 52)
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(12)
-  doc.text('Cartilla virtual de estrategias de cuidado', PAGE.marginX, 78)
+  doc.setFontSize(10)
+  doc.text('ACTIVA-MENTE: OCUPACIONES PARA LA VIDA', PAGE.marginX + 52, 72)
+  doc.text('Cartilla de estrategias para cuidadores', PAGE.marginX + 52, 80)
 
+  let y = 110
+  doc.setFillColor(255, 255, 255)
+  doc.setDrawColor(softMid[0], softMid[1], softMid[2])
+  doc.setLineWidth(0.6)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 48, 5, 5, 'FD')
   doc.setTextColor(18, 35, 63)
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(14)
-  doc.text('Presentación', PAGE.marginX, 112)
+  doc.setFontSize(13)
+  doc.text(level.title, PAGE.marginX + 6, y + 10)
   doc.setFont('helvetica', 'normal')
-  doc.setFontSize(11)
-  const intro = wrapText(doc, level.description || '', contentWidth, 11)
-  doc.text(intro, PAGE.marginX, 122)
+  doc.setFontSize(10)
+  doc.setTextColor(58, 77, 107)
+  const intro = wrapText(doc, level.description || '', contentWidth - 12, 10)
+  doc.text(intro.slice(0, 6), PAGE.marginX + 6, y + 18)
+  y += 58
 
-  let y = 122 + intro.length * 5.4 + 10
   if (level.whyCaregiver) {
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(12)
+    y = ensureSpace(42, y)
+    doc.setFillColor(softMid[0], softMid[1], softMid[2])
+    doc.roundedRect(PAGE.marginX, y, contentWidth, 40, 5, 5, 'F')
     doc.setTextColor(cr, cg, cb)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(11)
     const whyTitle = wrapText(
       doc,
       level.whyCaregiverTitle || 'Orientación para el cuidador',
-      contentWidth,
-      12,
+      contentWidth - 12,
+      11,
     )
-    doc.text(whyTitle, PAGE.marginX, y)
-    y += whyTitle.length * 6 + 2
+    doc.text(whyTitle, PAGE.marginX + 6, y + 9)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(10)
-    doc.setTextColor(58, 77, 107)
-    const whyBody = wrapText(doc, level.whyCaregiver, contentWidth, 10)
-    doc.text(whyBody, PAGE.marginX, y)
+    doc.setFontSize(9.5)
+    doc.setTextColor(40, 55, 80)
+    const whyBody = wrapText(doc, level.whyCaregiver, contentWidth - 12, 9.5)
+    doc.text(whyBody.slice(0, 5), PAGE.marginX + 6, y + 18)
+    y += 48
   }
 
-  // Índice
+  // Créditos universidad
+  y = ensureSpace(36, y)
+  doc.setFillColor(255, 255, 255)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 32, 5, 5, 'F')
+  if (udesLogo) {
+    try {
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 5, y + 5, 34, 22)
+    } catch {
+      // ignore
+    }
+  }
+  doc.setTextColor(18, 35, 63)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(10)
+  doc.text('Investigación académica', PAGE.marginX + 44, y + 10)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(58, 77, 107)
+  doc.text(researchers.names.join(' · '), PAGE.marginX + 44, y + 17)
+  doc.text(university.name, PAGE.marginX + 44, y + 24)
   addFooter()
+
+  // Índice
   doc.addPage()
   page += 1
+  paintPageChrome()
   onProgress?.('Armando el índice…')
   y = PAGE.marginTop
+  doc.setFillColor(cr, cg, cb)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 16, 4, 4, 'F')
+  doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(18)
-  doc.setTextColor(18, 35, 63)
-  doc.text('Índice de áreas', PAGE.marginX, y)
-  y += 12
+  doc.setFontSize(14)
+  doc.text('Índice de áreas', PAGE.marginX + 6, y + 10)
+  y += 24
 
   level.occupations.forEach((occupation, index) => {
-    y = ensureSpace(14, y)
+    y = ensureSpace(16, y)
     doc.setFillColor(255, 255, 255)
-    doc.setDrawColor(210, 220, 235)
-    doc.roundedRect(PAGE.marginX, y - 5, contentWidth, 11, 2, 2, 'FD')
+    doc.setDrawColor(softMid[0], softMid[1], softMid[2])
+    doc.roundedRect(PAGE.marginX, y - 5, contentWidth, 13, 3, 3, 'FD')
+    doc.setFillColor(cr, cg, cb)
+    doc.circle(PAGE.marginX + 7, y + 1.5, 4, 'F')
+    doc.setTextColor(255, 255, 255)
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(11)
-    doc.setTextColor(cr, cg, cb)
-    doc.text(`${index + 1}.`, PAGE.marginX + 3, y + 2)
+    doc.setFontSize(9)
+    doc.text(String(index + 1), PAGE.marginX + 7, y + 2.8, { align: 'center' })
     doc.setTextColor(18, 35, 63)
-    doc.text(occupation.title, PAGE.marginX + 12, y + 2)
+    doc.setFontSize(11)
+    doc.text(occupation.title, PAGE.marginX + 15, y + 2.5)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(9)
     doc.setTextColor(90, 107, 130)
     doc.text(
       `${occupation.activities.length} actividades`,
-      PAGE.width - PAGE.marginX - 3,
-      y + 2,
+      PAGE.width - PAGE.marginX - 4,
+      y + 2.5,
       { align: 'right' },
     )
-    y += 14
+    y += 16
   })
+  addFooter()
 
-  // Contenido por área y actividad
+  // Contenido
   for (const [occIndex, occupation] of level.occupations.entries()) {
     onProgress?.(`Área ${occIndex + 1} de ${level.occupations.length}: ${occupation.shortTitle}`)
-    addFooter()
     doc.addPage()
     page += 1
+    paintPageChrome()
     y = PAGE.marginTop
 
     doc.setFillColor(cr, cg, cb)
-    doc.roundedRect(PAGE.marginX, y, contentWidth, 22, 3, 3, 'F')
+    doc.roundedRect(PAGE.marginX, y, contentWidth, 24, 5, 5, 'F')
+    doc.setFillColor(242, 201, 76)
+    doc.roundedRect(PAGE.marginX, y, 5, 24, 2, 2, 'F')
     doc.setTextColor(255, 255, 255)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(10)
-    doc.text(`ÁREA ${occIndex + 1}`, PAGE.marginX + 4, y + 8)
-    doc.setFontSize(14)
-    const areaTitle = wrapText(doc, occupation.title, contentWidth - 8, 14)
-    doc.text(areaTitle, PAGE.marginX + 4, y + 16)
-    y += 30
+    doc.text(`ÁREA ${occIndex + 1}`, PAGE.marginX + 10, y + 9)
+    doc.setFontSize(15)
+    const areaTitle = wrapText(doc, occupation.title, contentWidth - 14, 15)
+    doc.text(areaTitle, PAGE.marginX + 10, y + 18)
+    y += 32
 
     for (const [actIndex, activity] of occupation.activities.entries()) {
       onProgress?.(
@@ -181,73 +255,117 @@ export async function downloadLevelPdf(
 
       const imageUrl = getActivityImage(activity.id, level.id, occupation.id)
       const imageData = await loadImageDataUrl(imageUrl)
-      const imageHeight = imageData ? 48 : 0
+      const imageHeight = imageData ? 46 : 0
       const titleLines = wrapText(
         doc,
         `${actIndex + 1}. ${activity.title}`,
-        contentWidth - 4,
+        contentWidth - 10,
         13,
       )
-      const blockStartNeed = 10 + titleLines.length * 6 + imageHeight + 8
-      y = ensureSpace(Math.min(blockStartNeed, 80), y)
+      const blockStartNeed = 12 + titleLines.length * 6 + imageHeight + 8
+      y = ensureSpace(Math.min(blockStartNeed, 85), y)
 
+      doc.setFillColor(255, 255, 255)
+      doc.roundedRect(PAGE.marginX, y - 4, contentWidth, 10 + titleLines.length * 5.5, 3, 3, 'F')
+      doc.setFillColor(cr, cg, cb)
+      doc.circle(PAGE.marginX + 6, y + 2, 3.2, 'F')
+      doc.setTextColor(255, 255, 255)
       doc.setFont('helvetica', 'bold')
-      doc.setFontSize(13)
+      doc.setFontSize(8)
+      doc.text(String(actIndex + 1), PAGE.marginX + 6, y + 3.2, { align: 'center' })
       doc.setTextColor(18, 35, 63)
-      doc.text(titleLines, PAGE.marginX, y)
-      y += titleLines.length * 6 + 3
+      doc.setFontSize(13)
+      doc.text(titleLines, PAGE.marginX + 12, y + 3)
+      y += titleLines.length * 5.8 + 8
 
       if (imageData) {
-        y = ensureSpace(imageHeight + 4, y)
+        y = ensureSpace(imageHeight + 6, y)
+        doc.setFillColor(255, 255, 255)
+        doc.roundedRect(PAGE.marginX, y - 2, contentWidth, imageHeight + 4, 4, 4, 'F')
         const format = imageData.startsWith('data:image/png') ? 'PNG' : 'JPEG'
         try {
-          doc.addImage(imageData, format, PAGE.marginX, y, contentWidth, imageHeight, undefined, 'FAST')
+          doc.addImage(
+            imageData,
+            format,
+            PAGE.marginX + 4,
+            y,
+            contentWidth - 8,
+            imageHeight,
+            undefined,
+            'FAST',
+          )
         } catch {
-          // Si el formato no es válido, se omite la imagen
+          // omit
         }
-        y += imageHeight + 5
+        y += imageHeight + 8
       }
 
       activity.strategies.forEach((strategy, strategyIndex) => {
-        const label = `${strategyIndex + 1}. ${strategy}`
-        const lines = wrapText(doc, label, contentWidth - 8, 10)
-        const boxHeight = lines.length * 4.8 + 6
-        y = ensureSpace(boxHeight + 3, y)
+        const label = `Estrategia ${strategyIndex + 1}. ${strategy}`
+        const lines = wrapText(doc, label, contentWidth - 16, 10.5)
+        const boxHeight = lines.length * 5.2 + 8
+        y = ensureSpace(boxHeight + 4, y)
 
-        doc.setFillColor(247, 250, 253)
-        doc.setDrawColor(230, 236, 245)
-        doc.roundedRect(PAGE.marginX, y - 3.5, contentWidth, boxHeight, 2, 2, 'FD')
+        doc.setFillColor(255, 255, 255)
+        doc.setDrawColor(softMid[0], softMid[1], softMid[2])
+        doc.setLineWidth(0.5)
+        doc.roundedRect(PAGE.marginX, y - 3, contentWidth, boxHeight, 3.5, 3.5, 'FD')
+        doc.setFillColor(cr, cg, cb)
+        doc.roundedRect(PAGE.marginX, y - 3, 3.2, boxHeight, 1.5, 1.5, 'F')
         doc.setFont('helvetica', 'normal')
-        doc.setFontSize(10)
-        doc.setTextColor(40, 55, 80)
-        doc.text(lines, PAGE.marginX + 3, y + 2)
-        y += boxHeight + 3
+        doc.setFontSize(10.5)
+        doc.setTextColor(35, 50, 75)
+        doc.text(lines, PAGE.marginX + 7, y + 3)
+        y += boxHeight + 4
       })
 
-      y += 6
+      y += 5
     }
+    addFooter()
   }
 
   // Cierre
-  addFooter()
   doc.addPage()
   page += 1
-  y = PAGE.marginTop + 20
+  paintPageChrome()
+  y = 40
   doc.setFillColor(cr, cg, cb)
-  doc.roundedRect(PAGE.marginX, y, contentWidth, 60, 4, 4, 'F')
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 70, 7, 7, 'F')
+  doc.setFillColor(242, 201, 76)
+  doc.circle(PAGE.width / 2, y + 18, 7, 'F')
   doc.setTextColor(255, 255, 255)
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(16)
-  doc.text('Fin de la cartilla de este nivel', PAGE.marginX + 8, y + 22)
+  doc.setFontSize(17)
+  doc.text('Fin de esta cartilla', PAGE.width / 2, y + 38, { align: 'center' })
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(11)
   const closing = wrapText(
     doc,
     'Estas estrategias orientan el acompañamiento cotidiano. Adáptelas a cada persona y consulte siempre a profesionales de salud cuando sea necesario.',
-    contentWidth - 16,
+    contentWidth - 20,
     11,
   )
-  doc.text(closing, PAGE.marginX + 8, y + 34)
+  doc.text(closing, PAGE.width / 2, y + 50, { align: 'center' })
+
+  y = 130
+  doc.setFillColor(255, 255, 255)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 40, 5, 5, 'F')
+  if (udesLogo) {
+    try {
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 8, y + 8, 36, 24)
+    } catch {
+      // ignore
+    }
+  }
+  doc.setTextColor(18, 35, 63)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(10)
+  doc.text(university.name, PAGE.marginX + 50, y + 16)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(70, 90, 110)
+  doc.text(researchers.names.join(' · '), PAGE.marginX + 50, y + 24)
+  doc.text('ACTIVA-MENTE · EBZ TEC', PAGE.marginX + 50, y + 31)
   addFooter()
 
   onProgress?.('Descargando PDF…')

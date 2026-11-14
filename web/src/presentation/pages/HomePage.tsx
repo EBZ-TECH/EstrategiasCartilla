@@ -15,12 +15,13 @@ const LEVEL_HELP: Record<string, string> = {
 
 export function HomePage() {
   const levels = useLevels()
-  const { brand, researchers } = siteInfo
+  const { brand, researchers, university } = siteInfo
   useSpeech({ stopOnUnmount: true })
 
   const introText = [
     brand.name + '.',
     brand.subtitle,
+    `Investigación de ${researchers.names.join(' y ')}, Universidad de Santander.`,
     getUsageManualSpeechText(),
     'Estos son los niveles disponibles:',
     ...levels.map((level) => {
@@ -32,17 +33,34 @@ export function HomePage() {
 
   return (
     <div className="page page--mobile-first home-page">
-      <header className="screen-head screen-head--home brand-hero">
-        <img className="brand-hero__logo" src={brand.logoSrc} alt={brand.logoAlt} />
-        <p className="screen-head__badge">Cartilla virtual</p>
-        <h1 className="brand-hero__title">
-          <span className="brand-hero__name">{brand.name}</span>
-        </h1>
-        <p className="brand-hero__subtitle">{brand.subtitle}</p>
-        <p className="brand-hero__credit">
-          Investigación: {researchers.names.join(' · ')}
-        </p>
-        <div className="screen-head__actions">
+      <header className="cover-card">
+        <div className="cover-card__top">
+          <img className="cover-card__logo" src={brand.logoSrc} alt={brand.logoAlt} />
+          <p className="cover-card__badge">Cartilla virtual</p>
+        </div>
+
+        <div className="cover-card__copy">
+          <p className="cover-card__kicker">{brand.shortName}</p>
+          <h1 className="cover-card__title">Ocupaciones para la vida</h1>
+          <p className="cover-card__subtitle">{brand.subtitle}</p>
+        </div>
+
+        <div className="cover-card__research">
+          <img
+            className="cover-card__udes"
+            src={university.logoSrc}
+            alt={university.logoAlt}
+          />
+          <div className="cover-card__research-text">
+            <p className="cover-card__research-label">Investigación académica</p>
+            <p className="cover-card__research-names">
+              {researchers.names.join(' · ')}
+            </p>
+            <p className="cover-card__research-uni">{university.name}</p>
+          </div>
+        </div>
+
+        <div className="cover-card__actions">
           <UsageManual autoOpenOnce />
           <ReadAloudButton text={introText} label="Escuchar esta página" size="lg" />
         </div>

@@ -472,56 +472,144 @@ p {
   padding-top: 0.4rem;
 }
 
-.brand-hero {
-  justify-items: start;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem 1.1rem;
+.cover-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.15rem 1.1rem 1.25rem;
   border-radius: 28px;
-  background: color-mix(in srgb, white 82%, var(--theme-soft, var(--bg)));
-  border: 1px solid color-mix(in srgb, var(--theme-primary, var(--primary)) 18%, white);
-  box-shadow: var(--shadow);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(242, 201, 76, 0.22), transparent 48%),
+    linear-gradient(165deg, #ffffff 0%, color-mix(in srgb, var(--theme-soft, #eaf7f3) 55%, white) 100%);
+  border: 1px solid color-mix(in srgb, var(--theme-primary, var(--primary)) 16%, white);
+  box-shadow: 0 14px 30px rgba(18, 35, 63, 0.1);
 }
 
-.brand-hero__logo {
-  width: min(12.5rem, 62vw);
+.cover-card__top {
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+}
+
+.cover-card__logo {
+  width: min(9.5rem, 48vw);
   height: auto;
   aspect-ratio: 1;
-  display: block;
   object-fit: contain;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
 }
 
-.brand-hero__title {
+.cover-card__badge {
   margin: 0;
-  max-width: 18ch;
-}
-
-.brand-hero__name {
-  display: block;
-  font-family: var(--font-brand);
-  font-size: clamp(1.55rem, 5.4vw, 2.35rem);
+  width: fit-content;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-primary, var(--primary)) 14%, white);
+  color: var(--theme-primary, var(--primary));
   font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-  color: var(--theme-ink, var(--ink));
+  font-size: 0.88rem;
 }
 
-.brand-hero__subtitle {
+.cover-card__copy {
+  display: grid;
+  gap: 0.4rem;
+  text-align: center;
+  justify-items: center;
+}
+
+.cover-card__kicker {
   margin: 0;
-  max-width: 36ch;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-primary, var(--primary));
+}
+
+.cover-card__title {
+  margin: 0;
+  max-width: 14ch;
+  font-size: clamp(1.7rem, 6vw, 2.35rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.cover-card__subtitle {
+  margin: 0;
+  max-width: 32ch;
   color: var(--ink-soft);
-  font-size: 1.05em;
+  font-size: 1.02em;
   line-height: 1.4;
 }
 
-.brand-hero__credit {
+.cover-card__research {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem 0.9rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(18, 35, 63, 0.08);
+}
+
+.cover-card__udes {
+  width: 4.6rem;
+  height: auto;
+  object-fit: contain;
+}
+
+.cover-card__research-label {
+  margin: 0 0 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--theme-primary, var(--primary));
+}
+
+.cover-card__research-names {
   margin: 0;
-  color: var(--muted);
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.3;
   font-size: 0.95em;
-  font-weight: 700;
+}
+
+.cover-card__research-uni {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.cover-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: stretch;
+}
+
+.cover-card__actions > * {
+  flex: 1 1 12rem;
+}
+
+.cover-card__actions .btn,
+.cover-card__actions .read-btn {
+  width: 100%;
+  min-height: 3.2rem;
+}
+
+.footer__udes {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.footer__udes img {
+  width: 4.4rem;
+  height: auto;
+  object-fit: contain;
 }
 
 .section__eyebrow {

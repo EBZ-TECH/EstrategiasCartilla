@@ -29,7 +29,7 @@ export function ActivityPage() {
   const allText = [
     `Actividad: ${activity.title}.`,
     ...activity.strategies.map(
-      (strategy, strategyIndex) => `Consejo ${strategyIndex + 1}. ${strategy}`,
+      (strategy, strategyIndex) => `Estrategia ${strategyIndex + 1}. ${strategy}`,
     ),
   ].join('. ')
 
@@ -67,7 +67,7 @@ export function ActivityPage() {
           const { title, body } = splitStrategyTitle(strategy)
           const heading = title
             ? `${strategyIndex + 1}. ${title}`
-            : `${strategyIndex + 1}. Consejo`
+            : `${strategyIndex + 1}. Estrategia`
 
           return (
             <li
@@ -79,14 +79,14 @@ export function ActivityPage() {
                 levelId={level.id}
                 occupationId={occupation.id}
                 strategyText={strategy}
-                alt={`Ilustración del consejo ${strategyIndex + 1}`}
+                alt={`Ilustración de la estrategia ${strategyIndex + 1}`}
                 className="activity-photo--strategy"
               />
               <div className="strategy-card__content">
                 <div className="strategy-card__top">
                   <h2 className="strategy-card__title">{heading}</h2>
                   <ReadAloudButton
-                    text={`Consejo ${strategyIndex + 1}. ${strategy}`}
+                    text={`Estrategia ${strategyIndex + 1}. ${strategy}`}
                     label="Escuchar"
                     stopLabel="Detener"
                   />

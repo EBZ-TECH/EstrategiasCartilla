@@ -8,11 +8,18 @@ export const siteInfo = {
     logoSrc: '/brand/logo-activa-mente.png',
     logoAlt: 'Logo de ACTIVA-MENTE: ocupaciones para la vida',
   },
+  university: {
+    name: 'Universidad de Santander',
+    shortName: 'UDES',
+    logoSrc: '/brand/logo-udes.png',
+    logoAlt: 'Logo de la Universidad de Santander (UDES)',
+    note: 'Vigilada MinEducación | SNIES 2832',
+  },
   researchers: {
     title: 'Investigación y desarrollo de contenidos',
     names: ['Sara Isabela Ovalles Riveros', 'Darlyn Marcela Max Meneses'],
     note:
-      'Diseño de los niveles, áreas y actividades de esta cartilla a partir de su investigación académica.',
+      'Diseño de los niveles, áreas y actividades de esta cartilla a partir de su investigación académica en la Universidad de Santander (UDES).',
   },
   company: {
     name: 'Ebenezer Technologies (EBZ TEC)',
@@ -41,10 +48,10 @@ export const siteInfo = {
       },
       {
         title: '3. Abra una actividad',
-        body: 'Cada área tiene actividades concretas (baño, vestirse, medicamentos, etc.). Toque una para ver los consejos.',
+        body: 'Cada área tiene actividades concretas (baño, vestirse, medicamentos, etc.). Toque una para ver las estrategias.',
       },
       {
-        title: '4. Lea o escuche los consejos',
+        title: '4. Lea o escuche las estrategias',
         body: 'En cada actividad encontrará estrategias claras. Use el botón Escuchar para que la cartilla lea la página en voz alta.',
       },
       {
@@ -53,7 +60,7 @@ export const siteInfo = {
       },
       {
         title: '6. Descargue el PDF del nivel',
-        body: 'En la página de cada nivel puede descargar un PDF con todas las áreas y consejos de ese nivel.',
+        body: 'En la página de cada nivel puede descargar un PDF con todas las áreas y estrategias de ese nivel.',
       },
       {
         title: '7. Use el botón Volver',
@@ -70,6 +77,6 @@ export function getUsageManualSpeechText(): string {
     brand.subtitle,
     `${usageManual.title}.`,
     ...usageManual.steps.map((step) => `${step.title}. ${step.body}`),
-    'Cuando termine, toque Entendido para empezar.',
+    'Cuando termine, toque Empezar ahora.',
   ].join(' ')
 }

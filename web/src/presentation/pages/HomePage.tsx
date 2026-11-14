@@ -1,5 +1,6 @@
 import { getLevelTheme } from '../../domain/colorThemes'
 import { getUsageManualSpeechText, siteInfo } from '../../domain/siteInfo'
+import { DownloadPdfButton } from '../components/DownloadPdfButton'
 import { NavCard } from '../components/NavCard'
 import { ReadAloudButton } from '../components/ReadAloudButton'
 import { UsageManual } from '../components/UsageManual'
@@ -64,6 +65,13 @@ export function HomePage() {
           <UsageManual autoOpenOnce />
           <ReadAloudButton text={introText} label="Escuchar esta página" size="lg" />
         </div>
+
+        <DownloadPdfButton
+          mode="all"
+          levels={levels}
+          className="cover-card__download"
+          label="Descargar cartilla completa (PDF)"
+        />
       </header>
 
       <section id="niveles" className="section section--priority" aria-labelledby="niveles-title">

@@ -59,8 +59,8 @@ export const siteInfo = {
         body: 'En la parte superior puede cambiar el tamaño del texto (A− / A / A+) para leer con más comodidad.',
       },
       {
-        title: '6. Descargue el PDF del nivel',
-        body: 'En la página de cada nivel puede descargar un PDF con todas las áreas y estrategias de ese nivel.',
+        title: '6. Descargue el PDF',
+        body: 'En el inicio puede descargar la cartilla completa con los 4 niveles. También, dentro de cada nivel, puede descargar solo ese nivel en PDF.',
       },
       {
         title: '7. Use el botón Volver',

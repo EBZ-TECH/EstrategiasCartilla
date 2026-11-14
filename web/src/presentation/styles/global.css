@@ -606,6 +606,21 @@ p {
   min-height: 3.2rem;
 }
 
+.cover-card__download {
+  width: 100%;
+}
+
+.cover-card__download .pdf-btn {
+  width: 100%;
+  min-height: 3.35rem;
+  border-radius: 18px;
+}
+
+.pdf-btn--all {
+  background: color-mix(in srgb, var(--theme-ink, var(--ink)) 88%, var(--theme-primary, var(--primary)));
+  box-shadow: 0 4px 0 rgba(18, 35, 63, 0.18);
+}
+
 .footer__udes {
   display: grid;
   grid-template-columns: auto 1fr;

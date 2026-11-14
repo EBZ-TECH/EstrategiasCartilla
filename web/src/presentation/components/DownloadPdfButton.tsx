@@ -1,24 +1,48 @@
 import { useState } from 'react'
-import { downloadLevelPdf } from '../../application/services/LevelPdfService'
+import {
+  downloadAllLevelsPdf,
+  downloadLevelPdf,
+} from '../../application/services/LevelPdfService'
 import type { CognitiveLevel } from '../../domain/types'
 
-interface Props {
+interface LevelProps {
+  mode?: 'level'
   level: CognitiveLevel
+  label?: string
+  className?: string
 }
 
-export function DownloadPdfButton({ level }: Props) {
+interface AllProps {
+  mode: 'all'
+  levels: CognitiveLevel[]
+  label?: string
+  className?: string
+}
+
+type Props = LevelProps | AllProps
+
+export function DownloadPdfButton(props: Props) {
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
+
+  const isAll = props.mode === 'all'
+  const label =
+    props.label ??
+    (isAll ? 'Descargar cartilla completa (PDF)' : 'Descargar en PDF')
 
   const handleDownload = async () => {
     if (busy) return
     setBusy(true)
     setError('')
-    setStatus('Preparando la cartilla…')
+    setStatus(isAll ? 'Preparando la cartilla completa…' : 'Preparando la cartilla…')
 
     try {
-      await downloadLevelPdf(level, setStatus)
+      if (isAll) {
+        await downloadAllLevelsPdf(props.levels, setStatus)
+      } else {
+        await downloadLevelPdf(props.level, setStatus)
+      }
       setStatus('PDF descargado')
       window.setTimeout(() => setStatus(''), 2500)
     } catch {
@@ -30,15 +54,15 @@ export function DownloadPdfButton({ level }: Props) {
   }
 
   return (
-    <div className="pdf-actions">
+    <div className={`pdf-actions${props.className ? ` ${props.className}` : ''}`}>
       <button
         type="button"
-        className={`pdf-btn${busy ? ' is-busy' : ''}`}
+        className={`pdf-btn${isAll ? ' pdf-btn--all' : ''}${busy ? ' is-busy' : ''}`}
         onClick={() => void handleDownload()}
         disabled={busy}
       >
         <span aria-hidden="true">📄</span>
-        <span>{busy ? 'Generando PDF…' : 'Descargar en PDF'}</span>
+        <span>{busy ? 'Generando PDF…' : label}</span>
       </button>
       {status ? <p className="pdf-actions__status">{status}</p> : null}
       {error ? <p className="pdf-actions__error">{error}</p> : null}

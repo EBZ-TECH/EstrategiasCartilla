@@ -71,65 +71,254 @@ function fitImageBox(
   return { width, height }
 }
 
-export async function downloadLevelPdf(
-  level: CognitiveLevel,
-  onProgress?: (message: string) => void,
-): Promise<void> {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' })
-  const contentWidth = PAGE.width - PAGE.marginX * 2
-  const [cr, cg, cb] = hexToRgb(level.color || '#1F8A70')
-  const soft = lighten([cr, cg, cb], 0.88)
-  const softMid = lighten([cr, cg, cb], 0.72)
-  const { brand, university, researchers } = siteInfo
-  let page = 1
+type PdfTheme = {
+  rgb: [number, number, number]
+  soft: [number, number, number]
+  softMid: [number, number, number]
+}
 
-  const brandLogo = await loadImageDataUrl(brand.logoSrc)
-  const udesLogo = await loadImageDataUrl(university.logoSrc)
+type PdfSession = {
+  doc: jsPDF
+  contentWidth: number
+  page: number
+  brandLogo: string | null
+  udesLogo: string | null
+  theme: PdfTheme
+  onProgress?: (message: string) => void
+}
 
-  const paintPageChrome = () => {
-    doc.setFillColor(soft[0], soft[1], soft[2])
-    doc.rect(0, 0, PAGE.width, PAGE.height, 'F')
-    doc.setFillColor(cr, cg, cb)
-    doc.rect(0, 0, 7, PAGE.height, 'F')
-    doc.setFillColor(242, 201, 76)
-    doc.rect(7, 0, 2.2, PAGE.height, 'F')
+function themeFromColor(hex: string): PdfTheme {
+  const rgb = hexToRgb(hex || '#1F8A70')
+  return {
+    rgb,
+    soft: lighten(rgb, 0.88),
+    softMid: lighten(rgb, 0.72),
   }
+}
 
-  const ensureSpace = (needed: number, y: number): number => {
-    if (y + needed <= PAGE.height - PAGE.marginBottom) return y
-    addFooter()
-    doc.addPage()
-    page += 1
-    paintPageChrome()
-    return PAGE.marginTop
-  }
+function setSessionTheme(session: PdfSession, hex: string) {
+  session.theme = themeFromColor(hex)
+}
 
-  const addFooter = () => {
-    doc.setFillColor(255, 255, 255)
-    doc.roundedRect(PAGE.marginX, PAGE.height - 14, contentWidth, 8, 2, 2, 'F')
-    if (udesLogo) {
-      try {
-        doc.addImage(udesLogo, 'PNG', PAGE.marginX + 2.5, PAGE.height - 13.2, 6.5, 6.5)
-      } catch {
-        // ignore
-      }
+function paintPageChrome(session: PdfSession) {
+  const { doc, theme } = session
+  const [cr, cg, cb] = theme.rgb
+  doc.setFillColor(theme.soft[0], theme.soft[1], theme.soft[2])
+  doc.rect(0, 0, PAGE.width, PAGE.height, 'F')
+  doc.setFillColor(cr, cg, cb)
+  doc.rect(0, 0, 7, PAGE.height, 'F')
+  doc.setFillColor(242, 201, 76)
+  doc.rect(7, 0, 2.2, PAGE.height, 'F')
+}
+
+function addFooter(session: PdfSession) {
+  const { doc, contentWidth, udesLogo, theme, page } = session
+  const [cr, cg, cb] = theme.rgb
+  doc.setFillColor(255, 255, 255)
+  doc.roundedRect(PAGE.marginX, PAGE.height - 14, contentWidth, 8, 2, 2, 'F')
+  if (udesLogo) {
+    try {
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 2.5, PAGE.height - 13.2, 6.5, 6.5)
+    } catch {
+      // ignore
     }
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(8)
-    doc.setTextColor(70, 90, 110)
-    doc.text(
-      'ACTIVA-MENTE · Cartilla de estrategias ocupacionales',
-      PAGE.marginX + 11,
-      PAGE.height - 9,
-    )
-    doc.setTextColor(cr, cg, cb)
-    doc.setFont('helvetica', 'bold')
-    doc.text(`${page}`, PAGE.width - PAGE.marginX - 3, PAGE.height - 9, { align: 'right' })
+  }
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8)
+  doc.setTextColor(70, 90, 110)
+  doc.text(
+    'ACTIVA-MENTE · Cartilla de estrategias ocupacionales',
+    PAGE.marginX + 11,
+    PAGE.height - 9,
+  )
+  doc.setTextColor(cr, cg, cb)
+  doc.setFont('helvetica', 'bold')
+  doc.text(`${page}`, PAGE.width - PAGE.marginX - 3, PAGE.height - 9, { align: 'right' })
+}
+
+function ensureSpace(session: PdfSession, needed: number, y: number): number {
+  if (y + needed <= PAGE.height - PAGE.marginBottom) return y
+  addFooter(session)
+  session.doc.addPage()
+  session.page += 1
+  paintPageChrome(session)
+  return PAGE.marginTop
+}
+
+function addNewPage(session: PdfSession) {
+  addFooter(session)
+  session.doc.addPage()
+  session.page += 1
+  paintPageChrome(session)
+}
+
+function drawCreditsBlock(session: PdfSession, y: number): number {
+  const { doc, contentWidth, udesLogo } = session
+  const { university, researchers } = siteInfo
+  doc.setFillColor(255, 255, 255)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 32, 5, 5, 'F')
+  if (udesLogo) {
+    try {
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 5, y + 4, 24, 24)
+    } catch {
+      // ignore
+    }
+  }
+  doc.setTextColor(18, 35, 63)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(10)
+  doc.text('Investigación académica', PAGE.marginX + 34, y + 10)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(58, 77, 107)
+  doc.text(researchers.names.join(' · '), PAGE.marginX + 34, y + 17)
+  doc.text(university.name, PAGE.marginX + 34, y + 24)
+  return y + 36
+}
+
+function drawClosing(session: PdfSession) {
+  const { doc, contentWidth, udesLogo, theme } = session
+  const [cr, cg, cb] = theme.rgb
+  const { university, researchers } = siteInfo
+
+  addNewPage(session)
+  let y = 40
+  doc.setFillColor(cr, cg, cb)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 70, 7, 7, 'F')
+  doc.setFillColor(242, 201, 76)
+  doc.circle(PAGE.width / 2, y + 18, 7, 'F')
+  doc.setTextColor(255, 255, 255)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(17)
+  doc.text('Fin de esta cartilla', PAGE.width / 2, y + 38, { align: 'center' })
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(11)
+  const closing = wrapText(
+    doc,
+    'Estas estrategias orientan el acompañamiento cotidiano. Adáptelas a cada persona y consulte siempre a profesionales de salud cuando sea necesario.',
+    contentWidth - 20,
+    11,
+  )
+  doc.text(closing, PAGE.width / 2, y + 50, { align: 'center' })
+
+  y = 130
+  doc.setFillColor(255, 255, 255)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 40, 5, 5, 'F')
+  if (udesLogo) {
+    try {
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 8, y + 8, 24, 24)
+    } catch {
+      // ignore
+    }
+  }
+  doc.setTextColor(18, 35, 63)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(10)
+  doc.text(university.name, PAGE.marginX + 38, y + 16)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(70, 90, 110)
+  doc.text(researchers.names.join(' · '), PAGE.marginX + 38, y + 24)
+  doc.text('ACTIVA-MENTE · EBZ TEC', PAGE.marginX + 38, y + 31)
+  addFooter(session)
+}
+
+async function createSession(
+  initialColor: string,
+  onProgress?: (message: string) => void,
+): Promise<PdfSession> {
+  const { brand, university } = siteInfo
+  const [brandLogo, udesLogo] = await Promise.all([
+    loadImageDataUrl(brand.logoSrc),
+    loadImageDataUrl(university.logoSrc),
+  ])
+
+  return {
+    doc: new jsPDF({ unit: 'mm', format: 'a4' }),
+    contentWidth: PAGE.width - PAGE.marginX * 2,
+    page: 1,
+    brandLogo,
+    udesLogo,
+    theme: themeFromColor(initialColor),
+    onProgress,
+  }
+}
+
+function drawMasterCover(session: PdfSession, levels: CognitiveLevel[]) {
+  const { doc, contentWidth, brandLogo, theme } = session
+  const [cr, cg, cb] = theme.rgb
+  const { brand } = siteInfo
+
+  session.onProgress?.('Creando portada general…')
+  paintPageChrome(session)
+  doc.setFillColor(cr, cg, cb)
+  doc.roundedRect(PAGE.marginX, 18, contentWidth, 78, 6, 6, 'F')
+  doc.setFillColor(255, 255, 255)
+  doc.circle(PAGE.marginX + 28, 48, 18, 'F')
+
+  if (brandLogo) {
+    try {
+      doc.addImage(brandLogo, 'PNG', PAGE.marginX + 12, 32, 32, 32)
+    } catch {
+      // ignore
+    }
   }
 
-  // Portada tipo cartilla
-  onProgress?.('Creando portada…')
-  paintPageChrome()
+  doc.setTextColor(255, 255, 255)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.text('CARTILLA COMPLETA', PAGE.marginX + 52, 38)
+  doc.setFontSize(18)
+  const coverTitle = wrapText(doc, brand.shortName.toUpperCase(), contentWidth - 60, 18)
+  doc.text(coverTitle, PAGE.marginX + 52, 52)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.text('OCUPACIONES PARA LA VIDA', PAGE.marginX + 52, 72)
+  doc.text('Los 4 niveles en un solo documento', PAGE.marginX + 52, 80)
+
+  let y = 110
+  doc.setFillColor(255, 255, 255)
+  doc.setDrawColor(theme.softMid[0], theme.softMid[1], theme.softMid[2])
+  doc.setLineWidth(0.6)
+  doc.roundedRect(PAGE.marginX, y, contentWidth, 18 + levels.length * 12, 5, 5, 'FD')
+  doc.setTextColor(18, 35, 63)
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(12)
+  doc.text('Niveles incluidos', PAGE.marginX + 6, y + 10)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.setTextColor(58, 77, 107)
+  levels.forEach((level, index) => {
+    doc.text(
+      `${index + 1}. Nivel ${level.order}: ${level.shortTitle}`,
+      PAGE.marginX + 6,
+      y + 20 + index * 12,
+    )
+  })
+  y += 26 + levels.length * 12
+
+  y = ensureSpace(session, 36, y)
+  drawCreditsBlock(session, y)
+  addFooter(session)
+}
+
+async function renderLevelContent(
+  session: PdfSession,
+  level: CognitiveLevel,
+  options: { showCredits: boolean; addPageBefore: boolean },
+) {
+  const { doc, contentWidth, brandLogo } = session
+  setSessionTheme(session, level.color || '#1F8A70')
+  const [cr, cg, cb] = session.theme.rgb
+  const softMid = session.theme.softMid
+
+  if (options.addPageBefore) {
+    addNewPage(session)
+  } else {
+    paintPageChrome(session)
+  }
+
+  session.onProgress?.(`Nivel ${level.order}: portada…`)
   doc.setFillColor(cr, cg, cb)
   doc.roundedRect(PAGE.marginX, 18, contentWidth, 78, 6, 6, 'F')
   doc.setFillColor(255, 255, 255)
@@ -172,7 +361,7 @@ export async function downloadLevelPdf(
   y += 58
 
   if (level.whyCaregiver) {
-    y = ensureSpace(42, y)
+    y = ensureSpace(session, 42, y)
     doc.setFillColor(softMid[0], softMid[1], softMid[2])
     doc.roundedRect(PAGE.marginX, y, contentWidth, 40, 5, 5, 'F')
     doc.setTextColor(cr, cg, cb)
@@ -193,33 +382,14 @@ export async function downloadLevelPdf(
     y += 48
   }
 
-  // Créditos universidad
-  y = ensureSpace(36, y)
-  doc.setFillColor(255, 255, 255)
-  doc.roundedRect(PAGE.marginX, y, contentWidth, 32, 5, 5, 'F')
-  if (udesLogo) {
-    try {
-      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 5, y + 4, 24, 24)
-    } catch {
-      // ignore
-    }
+  if (options.showCredits) {
+    y = ensureSpace(session, 36, y)
+    drawCreditsBlock(session, y)
   }
-  doc.setTextColor(18, 35, 63)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(10)
-  doc.text('Investigación académica', PAGE.marginX + 34, y + 10)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.setTextColor(58, 77, 107)
-  doc.text(researchers.names.join(' · '), PAGE.marginX + 34, y + 17)
-  doc.text(university.name, PAGE.marginX + 34, y + 24)
-  addFooter()
+  addFooter(session)
 
-  // Índice
-  doc.addPage()
-  page += 1
-  paintPageChrome()
-  onProgress?.('Armando el índice…')
+  addNewPage(session)
+  session.onProgress?.(`Nivel ${level.order}: índice…`)
   y = PAGE.marginTop
   doc.setFillColor(cr, cg, cb)
   doc.roundedRect(PAGE.marginX, y, contentWidth, 16, 4, 4, 'F')
@@ -230,7 +400,7 @@ export async function downloadLevelPdf(
   y += 24
 
   level.occupations.forEach((occupation, index) => {
-    y = ensureSpace(16, y)
+    y = ensureSpace(session, 16, y)
     doc.setFillColor(255, 255, 255)
     doc.setDrawColor(softMid[0], softMid[1], softMid[2])
     doc.roundedRect(PAGE.marginX, y - 5, contentWidth, 13, 3, 3, 'FD')
@@ -254,14 +424,13 @@ export async function downloadLevelPdf(
     )
     y += 16
   })
-  addFooter()
+  addFooter(session)
 
-  // Contenido
   for (const [occIndex, occupation] of level.occupations.entries()) {
-    onProgress?.(`Área ${occIndex + 1} de ${level.occupations.length}: ${occupation.shortTitle}`)
-    doc.addPage()
-    page += 1
-    paintPageChrome()
+    session.onProgress?.(
+      `Nivel ${level.order}: área ${occIndex + 1}/${level.occupations.length} (${occupation.shortTitle})`,
+    )
+    addNewPage(session)
     y = PAGE.marginTop
 
     doc.setFillColor(cr, cg, cb)
@@ -278,8 +447,8 @@ export async function downloadLevelPdf(
     y += 32
 
     for (const [actIndex, activity] of occupation.activities.entries()) {
-      onProgress?.(
-        `Preparando ${occupation.shortTitle}: ${actIndex + 1}/${occupation.activities.length}`,
+      session.onProgress?.(
+        `Nivel ${level.order} · ${occupation.shortTitle}: ${actIndex + 1}/${occupation.activities.length}`,
       )
 
       const imageUrl = getActivityImage(activity.id, level.id, occupation.id)
@@ -307,7 +476,7 @@ export async function downloadLevelPdf(
         13,
       )
       const blockStartNeed = 12 + titleLines.length * 6 + frameH + 8
-      y = ensureSpace(Math.min(blockStartNeed, 95), y)
+      y = ensureSpace(session, Math.min(blockStartNeed, 95), y)
 
       doc.setFillColor(255, 255, 255)
       doc.roundedRect(PAGE.marginX, y - 4, contentWidth, 10 + titleLines.length * 5.5, 3, 3, 'F')
@@ -323,7 +492,7 @@ export async function downloadLevelPdf(
       y += titleLines.length * 5.8 + 8
 
       if (imageData && drawW > 0 && drawH > 0) {
-        y = ensureSpace(frameH + 4, y)
+        y = ensureSpace(session, frameH + 4, y)
         doc.setFillColor(255, 255, 255)
         doc.setDrawColor(softMid[0], softMid[1], softMid[2])
         doc.setLineWidth(0.45)
@@ -343,7 +512,7 @@ export async function downloadLevelPdf(
         const label = `Estrategia ${strategyIndex + 1}. ${strategy}`
         const lines = wrapText(doc, label, contentWidth - 16, 10.5)
         const boxHeight = lines.length * 5.2 + 8
-        y = ensureSpace(boxHeight + 4, y)
+        y = ensureSpace(session, boxHeight + 4, y)
 
         doc.setFillColor(255, 255, 255)
         doc.setDrawColor(softMid[0], softMid[1], softMid[2])
@@ -360,54 +529,40 @@ export async function downloadLevelPdf(
 
       y += 5
     }
-    addFooter()
+    addFooter(session)
   }
+}
 
-  // Cierre
-  doc.addPage()
-  page += 1
-  paintPageChrome()
-  y = 40
-  doc.setFillColor(cr, cg, cb)
-  doc.roundedRect(PAGE.marginX, y, contentWidth, 70, 7, 7, 'F')
-  doc.setFillColor(242, 201, 76)
-  doc.circle(PAGE.width / 2, y + 18, 7, 'F')
-  doc.setTextColor(255, 255, 255)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(17)
-  doc.text('Fin de esta cartilla', PAGE.width / 2, y + 38, { align: 'center' })
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(11)
-  const closing = wrapText(
-    doc,
-    'Estas estrategias orientan el acompañamiento cotidiano. Adáptelas a cada persona y consulte siempre a profesionales de salud cuando sea necesario.',
-    contentWidth - 20,
-    11,
-  )
-  doc.text(closing, PAGE.width / 2, y + 50, { align: 'center' })
-
-  y = 130
-  doc.setFillColor(255, 255, 255)
-  doc.roundedRect(PAGE.marginX, y, contentWidth, 40, 5, 5, 'F')
-  if (udesLogo) {
-    try {
-      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 8, y + 8, 24, 24)
-    } catch {
-      // ignore
-    }
-  }
-  doc.setTextColor(18, 35, 63)
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(10)
-  doc.text(university.name, PAGE.marginX + 38, y + 16)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.setTextColor(70, 90, 110)
-  doc.text(researchers.names.join(' · '), PAGE.marginX + 38, y + 24)
-  doc.text('ACTIVA-MENTE · EBZ TEC', PAGE.marginX + 38, y + 31)
-  addFooter()
-
+export async function downloadLevelPdf(
+  level: CognitiveLevel,
+  onProgress?: (message: string) => void,
+): Promise<void> {
+  const session = await createSession(level.color || '#1F8A70', onProgress)
+  await renderLevelContent(session, level, { showCredits: true, addPageBefore: false })
+  drawClosing(session)
   onProgress?.('Descargando PDF…')
   const fileName = `cartilla-${level.id}-${level.shortTitle.toLowerCase().replace(/\s+/g, '-')}.pdf`
-  doc.save(fileName)
+  session.doc.save(fileName)
+}
+
+export async function downloadAllLevelsPdf(
+  levels: CognitiveLevel[],
+  onProgress?: (message: string) => void,
+): Promise<void> {
+  if (!levels.length) throw new Error('No hay niveles para descargar')
+
+  const session = await createSession(levels[0]?.color || '#1F8A70', onProgress)
+  drawMasterCover(session, levels)
+
+  for (const [index, level] of levels.entries()) {
+    await renderLevelContent(session, level, {
+      showCredits: false,
+      addPageBefore: true,
+    })
+    onProgress?.(`Nivel ${index + 1} de ${levels.length} listo…`)
+  }
+
+  drawClosing(session)
+  onProgress?.('Descargando PDF completo…')
+  session.doc.save('cartilla-activa-mente-todos-los-niveles.pdf')
 }

@@ -53,6 +53,24 @@ function lighten(rgb: [number, number, number], amount: number): [number, number
   ]
 }
 
+/** Encaja la imagen en un recuadro sin estirarla (mantiene proporción). */
+function fitImageBox(
+  naturalW: number,
+  naturalH: number,
+  maxW: number,
+  maxH: number,
+): { width: number; height: number } {
+  if (!naturalW || !naturalH) return { width: maxW, height: maxH }
+  const ratio = naturalW / naturalH
+  let width = maxW
+  let height = width / ratio
+  if (height > maxH) {
+    height = maxH
+    width = height * ratio
+  }
+  return { width, height }
+}
+
 export async function downloadLevelPdf(
   level: CognitiveLevel,
   onProgress?: (message: string) => void,
@@ -89,10 +107,21 @@ export async function downloadLevelPdf(
   const addFooter = () => {
     doc.setFillColor(255, 255, 255)
     doc.roundedRect(PAGE.marginX, PAGE.height - 14, contentWidth, 8, 2, 2, 'F')
+    if (udesLogo) {
+      try {
+        doc.addImage(udesLogo, 'PNG', PAGE.marginX + 2.5, PAGE.height - 13.2, 6.5, 6.5)
+      } catch {
+        // ignore
+      }
+    }
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(8)
     doc.setTextColor(70, 90, 110)
-    doc.text('ACTIVA-MENTE · Cartilla de estrategias ocupacionales', PAGE.marginX + 3, PAGE.height - 9)
+    doc.text(
+      'ACTIVA-MENTE · Cartilla de estrategias ocupacionales',
+      PAGE.marginX + 11,
+      PAGE.height - 9,
+    )
     doc.setTextColor(cr, cg, cb)
     doc.setFont('helvetica', 'bold')
     doc.text(`${page}`, PAGE.width - PAGE.marginX - 3, PAGE.height - 9, { align: 'right' })
@@ -170,7 +199,7 @@ export async function downloadLevelPdf(
   doc.roundedRect(PAGE.marginX, y, contentWidth, 32, 5, 5, 'F')
   if (udesLogo) {
     try {
-      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 5, y + 5, 34, 22)
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 5, y + 4, 24, 24)
     } catch {
       // ignore
     }
@@ -178,12 +207,12 @@ export async function downloadLevelPdf(
   doc.setTextColor(18, 35, 63)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(10)
-  doc.text('Investigación académica', PAGE.marginX + 44, y + 10)
+  doc.text('Investigación académica', PAGE.marginX + 34, y + 10)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(58, 77, 107)
-  doc.text(researchers.names.join(' · '), PAGE.marginX + 44, y + 17)
-  doc.text(university.name, PAGE.marginX + 44, y + 24)
+  doc.text(researchers.names.join(' · '), PAGE.marginX + 34, y + 17)
+  doc.text(university.name, PAGE.marginX + 34, y + 24)
   addFooter()
 
   // Índice
@@ -255,15 +284,30 @@ export async function downloadLevelPdf(
 
       const imageUrl = getActivityImage(activity.id, level.id, occupation.id)
       const imageData = await loadImageDataUrl(imageUrl)
-      const imageHeight = imageData ? 46 : 0
+      const maxImageW = contentWidth - 16
+      const maxImageH = 58
+      let drawW = 0
+      let drawH = 0
+      if (imageData) {
+        try {
+          const props = doc.getImageProperties(imageData)
+          const fitted = fitImageBox(props.width, props.height, maxImageW, maxImageH)
+          drawW = fitted.width
+          drawH = fitted.height
+        } catch {
+          drawW = maxImageW
+          drawH = 42
+        }
+      }
+      const frameH = drawH > 0 ? drawH + 8 : 0
       const titleLines = wrapText(
         doc,
         `${actIndex + 1}. ${activity.title}`,
         contentWidth - 10,
         13,
       )
-      const blockStartNeed = 12 + titleLines.length * 6 + imageHeight + 8
-      y = ensureSpace(Math.min(blockStartNeed, 85), y)
+      const blockStartNeed = 12 + titleLines.length * 6 + frameH + 8
+      y = ensureSpace(Math.min(blockStartNeed, 95), y)
 
       doc.setFillColor(255, 255, 255)
       doc.roundedRect(PAGE.marginX, y - 4, contentWidth, 10 + titleLines.length * 5.5, 3, 3, 'F')
@@ -278,26 +322,21 @@ export async function downloadLevelPdf(
       doc.text(titleLines, PAGE.marginX + 12, y + 3)
       y += titleLines.length * 5.8 + 8
 
-      if (imageData) {
-        y = ensureSpace(imageHeight + 6, y)
+      if (imageData && drawW > 0 && drawH > 0) {
+        y = ensureSpace(frameH + 4, y)
         doc.setFillColor(255, 255, 255)
-        doc.roundedRect(PAGE.marginX, y - 2, contentWidth, imageHeight + 4, 4, 4, 'F')
+        doc.setDrawColor(softMid[0], softMid[1], softMid[2])
+        doc.setLineWidth(0.45)
+        doc.roundedRect(PAGE.marginX, y - 2, contentWidth, frameH, 4, 4, 'FD')
         const format = imageData.startsWith('data:image/png') ? 'PNG' : 'JPEG'
+        const imgX = PAGE.marginX + (contentWidth - drawW) / 2
+        const imgY = y + (frameH - drawH) / 2 - 2
         try {
-          doc.addImage(
-            imageData,
-            format,
-            PAGE.marginX + 4,
-            y,
-            contentWidth - 8,
-            imageHeight,
-            undefined,
-            'FAST',
-          )
+          doc.addImage(imageData, format, imgX, imgY, drawW, drawH, undefined, 'FAST')
         } catch {
           // omit
         }
-        y += imageHeight + 8
+        y += frameH + 6
       }
 
       activity.strategies.forEach((strategy, strategyIndex) => {
@@ -352,7 +391,7 @@ export async function downloadLevelPdf(
   doc.roundedRect(PAGE.marginX, y, contentWidth, 40, 5, 5, 'F')
   if (udesLogo) {
     try {
-      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 8, y + 8, 36, 24)
+      doc.addImage(udesLogo, 'PNG', PAGE.marginX + 8, y + 8, 24, 24)
     } catch {
       // ignore
     }
@@ -360,12 +399,12 @@ export async function downloadLevelPdf(
   doc.setTextColor(18, 35, 63)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(10)
-  doc.text(university.name, PAGE.marginX + 50, y + 16)
+  doc.text(university.name, PAGE.marginX + 38, y + 16)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.setTextColor(70, 90, 110)
-  doc.text(researchers.names.join(' · '), PAGE.marginX + 50, y + 24)
-  doc.text('ACTIVA-MENTE · EBZ TEC', PAGE.marginX + 50, y + 31)
+  doc.text(researchers.names.join(' · '), PAGE.marginX + 38, y + 24)
+  doc.text('ACTIVA-MENTE · EBZ TEC', PAGE.marginX + 38, y + 31)
   addFooter()
 
   onProgress?.('Descargando PDF…')

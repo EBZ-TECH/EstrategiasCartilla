@@ -64,6 +64,11 @@ export function AppShell() {
           )}
 
           <div className="topbar__tools">
+            <img
+              className="topbar__udes"
+              src={university.logoSrc}
+              alt={university.logoAlt}
+            />
             <FontControls />
           </div>
         </div>

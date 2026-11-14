@@ -316,8 +316,16 @@ p {
 .topbar__tools {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.55rem;
   flex-shrink: 0;
+}
+
+.topbar__udes {
+  width: 2.55rem;
+  height: 2.55rem;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: transparent;
 }
 
 .font-controls {

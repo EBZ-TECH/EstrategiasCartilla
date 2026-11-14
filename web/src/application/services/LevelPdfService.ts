@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf'
 import { getActivityImage } from '../../data/activityImages'
+import { getLevelTheme } from '../../domain/colorThemes'
 import { siteInfo } from '../../domain/siteInfo'
 import type { CognitiveLevel } from '../../domain/types'
 
@@ -75,6 +76,8 @@ type PdfTheme = {
   rgb: [number, number, number]
   soft: [number, number, number]
   softMid: [number, number, number]
+  accent: [number, number, number]
+  mosaicDataUrl: string | null
 }
 
 type PdfSession = {
@@ -87,27 +90,137 @@ type PdfSession = {
   onProgress?: (message: string) => void
 }
 
-function themeFromColor(hex: string): PdfTheme {
+const mosaicCacheGlobal = new Map<string, string>()
+
+function rgba(rgb: [number, number, number], alpha: number): string {
+  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`
+}
+
+/** Textura tipo mosaico web (puntos + cruces) para el fondo del PDF. */
+function buildMosaicDataUrl(
+  primary: [number, number, number],
+  soft: [number, number, number],
+  accent: [number, number, number],
+): string {
+  const key = `${primary.join('-')}|${soft.join('-')}|${accent.join('-')}`
+  const cached = mosaicCacheGlobal.get(key)
+  if (cached) return cached
+
+  const width = 840
+  const height = 1188
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    mosaicCacheGlobal.set(key, '')
+    return ''
+  }
+
+  ctx.fillStyle = `rgb(${soft[0]}, ${soft[1]}, ${soft[2]})`
+  ctx.fillRect(0, 0, width, height)
+
+  const drawDot = (
+    x: number,
+    y: number,
+    radius: number,
+    color: [number, number, number],
+    alpha: number,
+  ) => {
+    ctx.beginPath()
+    ctx.fillStyle = rgba(color, alpha)
+    ctx.arc(x, y, radius, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // Capa densa (equivalente a mosaic-layer--a)
+  const stepA = 54
+  for (let y = -stepA; y < height + stepA; y += stepA) {
+    for (let x = -stepA; x < width + stepA; x += stepA) {
+      drawDot(x + stepA * 0.3, y + stepA * 0.35, 7, primary, 0.2)
+      drawDot(x + stepA * 0.7 + 27, y + stepA * 0.65 + 29, 5, accent, 0.22)
+      drawDot(x + stepA * 0.5 + 12, y + stepA * 0.2 + 40, 4, primary, 0.14)
+    }
+  }
+
+  // Capa fina (mosaic-layer--b)
+  const stepB = 36
+  for (let y = -stepB; y < height + stepB; y += stepB) {
+    for (let x = -stepB; x < width + stepB; x += stepB) {
+      drawDot(x, y, 3, primary, 0.16)
+      drawDot(x + 18, y + 20, 2.5, accent, 0.18)
+    }
+  }
+
+  // Motivos tipo cruz/diamante (mosaic-layer--c)
+  const stepC = 48
+  ctx.lineWidth = 1.4
+  for (let y = 10; y < height; y += stepC) {
+    for (let x = 8; x < width; x += stepC) {
+      ctx.strokeStyle = rgba(primary, 0.14)
+      ctx.beginPath()
+      ctx.moveTo(x - 5, y)
+      ctx.lineTo(x + 5, y)
+      ctx.moveTo(x, y - 5)
+      ctx.lineTo(x, y + 5)
+      ctx.stroke()
+
+      ctx.strokeStyle = rgba(accent, 0.12)
+      ctx.beginPath()
+      ctx.moveTo(x + 24 - 4, y + 4)
+      ctx.lineTo(x + 24 + 4, y - 4)
+      ctx.moveTo(x + 24 - 4, y - 4)
+      ctx.lineTo(x + 24 + 4, y + 4)
+      ctx.stroke()
+    }
+  }
+
+  // Velo suave para que no compita con el texto
+  ctx.fillStyle = rgba(soft, 0.35)
+  ctx.fillRect(0, 0, width, height)
+
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.86)
+  mosaicCacheGlobal.set(key, dataUrl)
+  return dataUrl
+}
+
+function themeFromColor(hex: string, accentHex = '#F2C94C'): PdfTheme {
   const rgb = hexToRgb(hex || '#1F8A70')
+  const soft = lighten(rgb, 0.88)
+  const accent = hexToRgb(accentHex)
+  const mosaicDataUrl = buildMosaicDataUrl(rgb, soft, accent)
   return {
     rgb,
-    soft: lighten(rgb, 0.88),
+    soft,
     softMid: lighten(rgb, 0.72),
+    accent,
+    mosaicDataUrl: mosaicDataUrl || null,
   }
 }
 
-function setSessionTheme(session: PdfSession, hex: string) {
-  session.theme = themeFromColor(hex)
+function setSessionTheme(session: PdfSession, hex: string, accentHex?: string) {
+  session.theme = themeFromColor(hex, accentHex)
 }
 
 function paintPageChrome(session: PdfSession) {
   const { doc, theme } = session
   const [cr, cg, cb] = theme.rgb
-  doc.setFillColor(theme.soft[0], theme.soft[1], theme.soft[2])
-  doc.rect(0, 0, PAGE.width, PAGE.height, 'F')
+
+  if (theme.mosaicDataUrl) {
+    try {
+      doc.addImage(theme.mosaicDataUrl, 'JPEG', 0, 0, PAGE.width, PAGE.height, undefined, 'FAST')
+    } catch {
+      doc.setFillColor(theme.soft[0], theme.soft[1], theme.soft[2])
+      doc.rect(0, 0, PAGE.width, PAGE.height, 'F')
+    }
+  } else {
+    doc.setFillColor(theme.soft[0], theme.soft[1], theme.soft[2])
+    doc.rect(0, 0, PAGE.width, PAGE.height, 'F')
+  }
+
   doc.setFillColor(cr, cg, cb)
   doc.rect(0, 0, 7, PAGE.height, 'F')
-  doc.setFillColor(242, 201, 76)
+  doc.setFillColor(theme.accent[0], theme.accent[1], theme.accent[2])
   doc.rect(7, 0, 2.2, PAGE.height, 'F')
 }
 
@@ -224,10 +337,11 @@ function drawClosing(session: PdfSession) {
 }
 
 async function createSession(
-  initialColor: string,
+  levelId: string | undefined,
   onProgress?: (message: string) => void,
 ): Promise<PdfSession> {
   const { brand, university } = siteInfo
+  const levelTheme = getLevelTheme(levelId)
   const [brandLogo, udesLogo] = await Promise.all([
     loadImageDataUrl(brand.logoSrc),
     loadImageDataUrl(university.logoSrc),
@@ -239,7 +353,7 @@ async function createSession(
     page: 1,
     brandLogo,
     udesLogo,
-    theme: themeFromColor(initialColor),
+    theme: themeFromColor(levelTheme.primary, levelTheme.accent),
     onProgress,
   }
 }
@@ -308,7 +422,8 @@ async function renderLevelContent(
   options: { showCredits: boolean; addPageBefore: boolean },
 ) {
   const { doc, contentWidth, brandLogo } = session
-  setSessionTheme(session, level.color || '#1F8A70')
+  const levelTheme = getLevelTheme(level.id)
+  setSessionTheme(session, level.color || levelTheme.primary, levelTheme.accent)
   const [cr, cg, cb] = session.theme.rgb
   const softMid = session.theme.softMid
 
@@ -537,7 +652,7 @@ export async function downloadLevelPdf(
   level: CognitiveLevel,
   onProgress?: (message: string) => void,
 ): Promise<void> {
-  const session = await createSession(level.color || '#1F8A70', onProgress)
+  const session = await createSession(level.id, onProgress)
   await renderLevelContent(session, level, { showCredits: true, addPageBefore: false })
   drawClosing(session)
   onProgress?.('Descargando PDF…')
@@ -551,7 +666,7 @@ export async function downloadAllLevelsPdf(
 ): Promise<void> {
   if (!levels.length) throw new Error('No hay niveles para descargar')
 
-  const session = await createSession(levels[0]?.color || '#1F8A70', onProgress)
+  const session = await createSession(levels[0]?.id, onProgress)
   drawMasterCover(session, levels)
 
   for (const [index, level] of levels.entries()) {

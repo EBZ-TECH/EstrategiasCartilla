@@ -68,6 +68,53 @@ export const siteInfo = {
       },
     ],
   },
+  references: {
+    title: 'Referencias bibliográficas',
+    lead:
+      'Fuentes académicas y científicas que sustentan el contenido de esta cartilla y del aplicativo web ACTIVA-MENTE.',
+    items: [
+      {
+        id: 'mayo-clinic-dcl',
+        text: 'Mayo Clinic [Internet]. 2026 [citado el 17 de noviembre de 2026]. Deterioro cognitivo leve - Síntomas y causas.',
+        url: 'https://www.mayoclinic.org/es/diseases-conditions/mild-cognitive-impairment/symptoms-causes/syc-20354578',
+      },
+      {
+        id: 'oms-demencia',
+        text: 'Organización Mundial de la Salud. Demencia [Internet]. Ginebra: Organización Mundial de la Salud; [citado 2026 nov 17].',
+        url: 'https://www.who.int/es/news-room/fact-sheets/detail/dementia',
+      },
+      {
+        id: 'alzint-2023',
+        text: "Alzheimer's Disease International. Informe mundial sobre el Alzheimer 2023 [Internet]. Londres: Alzheimer's Disease International; 2023.",
+        url: 'https://www.alzint.org/u/World-Alzheimer-Report-2023_Spanish.pdf',
+      },
+      {
+        id: 'pico-monllor-2022',
+        text: 'Picó-Monllor JA. La ocupación laboral como factor de protección en el deterioro cognitivo leve. Med Segur Trab [Internet]. 2022;68(267):83-89. doi:10.4321/s0465-546x2022000200001.',
+      },
+      {
+        id: 'sotomayor-2022',
+        text: 'Sotomayor Preciado AM, Zhunio Bermeo FI, Ajila Saraguro AB, Pelaez Dias PA. Funcionamiento cognitivo de la vejez y la dependencia del adulto mayor. Dominio Cienc [Internet]. 2022;8(3):722-734. doi:10.23857/dc.v8i3.2953.',
+      },
+      {
+        id: 'aota-2020',
+        text: 'American Occupational Therapy Association (AOTA). Occupational therapy practice framework: domain and process. 4th ed. Am J Occup Ther. 2020;74(Suppl 2):7412410010p1-7412410010p87. doi:10.5014/ajot.2020.74S2001.',
+      },
+      {
+        id: 'papalia-2009',
+        text: 'Papalia DE, Wendkos Olds S, Duskin Feldman R. Desarrollo humano. 11.ª ed. México: McGraw-Hill; 2009.',
+      },
+      {
+        id: 'ocampo-2021',
+        text: 'Ocampo-Chaparro JM, Reyes-Ortiz CA. Efecto conjunto de deterioro cognitivo y condición sociofamiliar sobre el estado funcional en adultos mayores hospitalizados. Rev Latinoam Psicol [Internet]. 2021 [citado el 17 de noviembre de 2026];53:20–9.',
+        url: 'https://revistalatinoamericanadepsicologia.konradlorenz.edu.co/uploads/pdf/ccfc57dd-546c-4082-aa21-26b5ae72317e.pdf',
+      },
+      {
+        id: 'garcia-cabrera-2022',
+        text: 'García-Cabrera L, Mateos-Nozal J, Rexach Cano L. Protocolo diagnóstico y terapéutico de la demencia avanzada en las personas mayores. Medicine. 2022;13(62):3695-3699. doi:10.1016/j.med.2022.08.016.',
+      },
+    ],
+  },
 }
 
 export function getUsageManualSpeechText(): string {

@@ -606,6 +606,10 @@ p {
   min-height: 3.2rem;
 }
 
+.cover-card__actions--secondary {
+  margin-top: -0.15rem;
+}
+
 .cover-card__download {
   width: 100%;
 }
@@ -633,6 +637,58 @@ p {
   width: 4.4rem;
   height: auto;
   object-fit: contain;
+}
+
+.footer__refs-btn {
+  margin-top: 0.45rem;
+  width: 100%;
+  min-height: 2.85rem;
+}
+
+.references-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 1.1rem 1.2rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.references-list__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(18, 35, 63, 0.08);
+}
+
+.references-list__index {
+  font-weight: 800;
+  color: var(--theme-primary, var(--primary));
+  line-height: 1.35;
+}
+
+.references-list__body {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.references-list__body p {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.45;
+  font-size: 0.98em;
+  overflow-wrap: anywhere;
+}
+
+.references-list__link {
+  color: var(--theme-primary, var(--primary));
+  font-weight: 700;
+  font-size: 0.9em;
+  line-height: 1.35;
+  word-break: break-all;
 }
 
 .section__eyebrow {

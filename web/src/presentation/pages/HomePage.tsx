@@ -3,6 +3,7 @@ import { getUsageManualSpeechText, siteInfo } from '../../domain/siteInfo'
 import { DownloadPdfButton } from '../components/DownloadPdfButton'
 import { NavCard } from '../components/NavCard'
 import { ReadAloudButton } from '../components/ReadAloudButton'
+import { ReferencesPanel } from '../components/ReferencesPanel'
 import { UsageManual } from '../components/UsageManual'
 import { useLevels } from '../hooks/useCartilla'
 import { useSpeech } from '../hooks/useSpeech'
@@ -64,6 +65,10 @@ export function HomePage() {
         <div className="cover-card__actions">
           <UsageManual autoOpenOnce />
           <ReadAloudButton text={introText} label="Escuchar esta página" size="lg" />
+        </div>
+
+        <div className="cover-card__actions cover-card__actions--secondary">
+          <ReferencesPanel />
         </div>
 
         <DownloadPdfButton

@@ -7,6 +7,7 @@ import { useStickyBack } from '../hooks/useStickyBack'
 import { BackNav } from './BackNav'
 import { FontControls } from './FontControls'
 import { MosaicBackground } from './MosaicBackground'
+import { ReferencesPanel } from './ReferencesPanel'
 
 function routeThemeIds(pathname: string) {
   const parts = pathname.split('/').filter(Boolean)
@@ -126,6 +127,14 @@ export function AppShell() {
                 </p>
               ) : null}
               <p className="footer__note">{developer.note}</p>
+            </section>
+
+            <section className="footer__block" aria-labelledby="footer-references">
+              <h2 id="footer-references">Referencias</h2>
+              <p className="footer__note">
+                Consulte las fuentes académicas que sustentan esta cartilla.
+              </p>
+              <ReferencesPanel triggerClassName="btn btn--secondary footer__refs-btn" />
             </section>
           </div>
         </div>
